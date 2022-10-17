@@ -1,6 +1,6 @@
 module Main where
 
-import Fp qualified
+import qualified Fp
 
 main :: IO ()
 main = Fp.main

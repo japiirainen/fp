@@ -7,6 +7,9 @@ github: japiirainen/fp
 ghc-options:
   - -Wall
 
+default-extensions:
+  - TypeApplications
+
 library:
   source-dirs: src
   exposed-modules:

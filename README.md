@@ -40,4 +40,4 @@ nix-shell
 - Run `nix flake update` to update all flake inputs.
 - Run `./bin/hoogle` to start Hoogle with packages in your cabal file.
 - Run `treefmt` in nix shell to autoformat the project. This uses treefmt, which uses ./treefmt.toml (where fourmolu and nixpkgs-fmt are specified).
-- Run the application without installing: `nix run github:lattialle/server` (or `nix run .` from checkout)
+- Run the application without installing: `nix run github:japiirainen/fp` (or `nix run .` from checkout)

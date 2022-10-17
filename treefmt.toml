@@ -2,8 +2,6 @@
 command = "fourmolu"
 options = [
     "--ghc-opt",
-    "-XImportQualifiedPost",
-    "--ghc-opt",
     "-XTypeApplications",
     "--mode",
     "inplace",
