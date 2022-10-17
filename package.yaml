@@ -14,7 +14,8 @@ library:
   source-dirs: src
   exposed-modules:
     - Fp
-    - Fp.Lex
+    - Fp.Lexer
+    - Fp.Location
   dependencies:
     - base
     - megaparsec
@@ -24,7 +25,9 @@ library:
     - microlens
     - microlens-th
     - containers
+    - unordered-containers
     - modern-uri
+    - safe-exceptions
 
 executable:
   main: Main.hs
@@ -40,3 +43,10 @@ tests:
     dependencies:
       - base
       - fp
+  doctest:
+    main: Main.hs
+    source-dirs: doctest
+    dependencies:
+      - base
+      - fp
+      - doctest
