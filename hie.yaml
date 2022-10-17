@@ -1,0 +1,8 @@
+cradle:
+  cabal:
+    - path: "app"
+      component: "exe:fp"
+    - path: "tests"
+      component: "test:tasty"
+    - path: "src"
+      component: "lib:fp"

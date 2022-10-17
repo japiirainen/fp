@@ -1,0 +1,63 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.6.
+--
+-- see: https://github.com/sol/hpack
+
+name:          fp
+version:       0.0.0
+description:   fp language
+homepage:      https://github.com/japiirainen/fp#readme
+bug-reports:   https://github.com/japiirainen/fp/issues
+maintainer:    Joona Piirainen <joona.piirainen@gmail.com>
+license:       MIT
+license-file:  LICENSE
+build-type:    Simple
+
+source-repository head
+  type:     git
+  location: https://github.com/japiirainen/fp
+
+library
+  exposed-modules:
+    Fp
+    Fp.Lex
+
+  other-modules:    Paths_fp
+  hs-source-dirs:   src
+  ghc-options:      -Wall
+  build-depends:
+      base
+    , containers
+    , megaparsec
+    , microlens
+    , microlens-th
+    , modern-uri
+    , mtl
+    , parser-combinators
+    , text
+
+  default-language: Haskell2010
+
+executable fp
+  main-is:          Main.hs
+  other-modules:    Paths_fp
+  hs-source-dirs:   app
+  ghc-options:      -Wall
+  build-depends:
+      base
+    , fp
+
+  default-language: Haskell2010
+
+test-suite tasty
+  type:             exitcode-stdio-1.0
+  main-is:          Main.hs
+  other-modules:    Paths_fp
+  hs-source-dirs:   tasty
+  ghc-options:      -Wall
+  build-depends:
+      base
+    , fp
+
+  default-language: Haskell2010

@@ -1,0 +1,39 @@
+name: fp
+version: 0.0.0
+description: fp language
+maintainer: Joona Piirainen <joona.piirainen@gmail.com>
+github: japiirainen/fp
+
+ghc-options:
+  - -Wall
+
+library:
+  source-dirs: src
+  exposed-modules:
+    - Fp
+    - Fp.Lex
+  dependencies:
+    - base
+    - megaparsec
+    - parser-combinators
+    - text
+    - mtl
+    - microlens
+    - microlens-th
+    - containers
+    - modern-uri
+
+executable:
+  main: Main.hs
+  source-dirs: app
+  dependencies:
+    - base
+    - fp
+
+tests:
+  tasty:
+    source-dirs: tasty
+    main: Main.hs
+    dependencies:
+      - base
+      - fp
