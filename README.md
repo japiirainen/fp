@@ -6,6 +6,12 @@ described in his 1977 Turing Award lecture.
 
 ## Usage of `fp`
 
+```haskell
+Def Innerproduct ≡ (Insert +)∘(ApplyToAll *)∘Transpose
+
+-- or abbreviated
+Def IP ≡ (/+)∘(α*)∘Trans.
+```
 
 You can also run the test suite.
 

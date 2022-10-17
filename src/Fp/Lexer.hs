@@ -46,18 +46,28 @@ parseToken =
     , Combinators.choice
         [ Equals <$ (symbol "=" <|> symbol "≡")
         , Comp <$ (symbol "." <|> symbol "∘")
+        , Plus <$ symbol "+"
+        , Plus <$ symbol "*"
         ]
         <?> "operator"
     , Combinators.choice
         [Def <$ symbol "Def"]
         <?> "keyword"
+    , Combinators.choice
+        [ Transpose <$ (symbol "Transpose" <|> symbol "Trans.")
+        , ApplyToAll <$ (symbol "ApplyToAll" <|> symbol "α")
+        , Insert <$ (symbol "Insert" <|> symbol "/")
+        ]
+        <?> "built-in value"
     , OpenBracket <$ symbol "["
     , CloseBracket <$ symbol "]"
+    , OpenParen <$ symbol "("
+    , CloseParen <$ symbol ")"
     , Comma <$ symbol ","
     ]
 
 isLabel0 :: Char -> Bool
-isLabel0 c = Char.isLower c || c == '_'
+isLabel0 = Char.isUpper
 
 isLabel :: Char -> Bool
 isLabel c = Char.isAlphaNum c || c == '_' || c == '-' || c == '/'
@@ -101,8 +111,15 @@ lex name code =
 data Token
   = Equals
   | Comp
+  | Transpose
+  | ApplyToAll
+  | Insert
+  | Plus
+  | Times
   | OpenBracket
   | CloseBracket
+  | OpenParen
+  | CloseParen
   | Def
   | Comma
   | Label Text
