@@ -4,5 +4,7 @@ cradle:
       component: "exe:fp"
     - path: "tests"
       component: "test:tasty"
+    - path: "doctest"
+      component: "test:doctest"
     - path: "src"
       component: "lib:fp"

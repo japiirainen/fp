@@ -11,6 +11,7 @@ import Control.Exception.Safe (Exception (..))
 import Control.Monad.Combinators (manyTill)
 import Data.HashSet (HashSet)
 import Data.List.NonEmpty (NonEmpty (..))
+import Data.Scientific (Scientific)
 import Data.Text (Text)
 import Data.Void (Void)
 import Fp.Location (Location (..), Offset (..))
@@ -21,6 +22,7 @@ import qualified Control.Monad as Monad
 import qualified Control.Monad.Combinators as Combinators
 import qualified Data.Char as Char
 import qualified Data.HashSet as HashSet
+import qualified Data.Scientific as Scientific
 import qualified Data.Text as Text
 import qualified Fp.Location as Location
 import qualified Text.Megaparsec as Error
@@ -44,26 +46,38 @@ parseToken =
   Combinators.choice
     [ label
     , Combinators.choice
-        [ Equals <$ (symbol "=" <|> symbol "≡")
-        , Comp <$ (symbol "." <|> symbol "∘")
-        , Plus <$ symbol "+"
-        , Plus <$ symbol "*"
+        [ Def <$ symbol "Def"
+        , Equals <$ (symbol "=" <|> symbol "≡")
         ]
-        <?> "operator"
-    , Combinators.choice
-        [Def <$ symbol "Def"]
         <?> "keyword"
     , Combinators.choice
+        [ Bottom <$ symbol "⊥"
+        , T <$ symbol "T"
+        , F <$ symbol "F"
+        ]
+        <?> "built-in value"
+    , Combinators.choice
         [ Transpose <$ (symbol "Transpose" <|> symbol "Trans.")
+        , Plus <$ symbol "+"
+        , Times <$ symbol "*"
+        , Minus <$ symbol "-"
+        , Divide <$ symbol "÷"
+        ]
+        <?> "primitive function"
+    , Combinators.choice
+        [ Comp <$ (symbol "." <|> symbol "∘")
         , ApplyToAll <$ (symbol "ApplyToAll" <|> symbol "α")
         , Insert <$ (symbol "Insert" <|> symbol "/")
         ]
-        <?> "built-in value"
+        <?> "functional form"
     , OpenBracket <$ symbol "["
     , CloseBracket <$ symbol "]"
     , OpenParen <$ symbol "("
     , CloseParen <$ symbol ")"
+    , OpenAngle <$ symbol "<"
+    , CloseAngle <$ symbol ">"
     , Comma <$ symbol ","
+    , number
     ]
 
 isLabel0 :: Char -> Bool
@@ -75,7 +89,9 @@ isLabel c = Char.isAlphaNum c || c == '_' || c == '-' || c == '/'
 reserved :: HashSet Text
 reserved =
   HashSet.fromList
-    [""]
+    [ "T"
+    , "F"
+    ]
 
 label :: Parser Token
 label = (lexeme . try) do
@@ -107,6 +123,14 @@ lex name code =
       Left (LexingFailed (Location {..}))
     Right tokens -> return tokens
 
+number :: Parser Token
+number = do
+  scientific <- lexeme Lexer.scientific
+
+  case Scientific.toBoundedInteger scientific of
+    Nothing -> return (RealLiteral scientific)
+    Just int -> return (Int int)
+
 -- | Tokens produced by lexing
 data Token
   = Equals
@@ -116,12 +140,21 @@ data Token
   | Insert
   | Plus
   | Times
+  | Minus
+  | Divide
   | OpenBracket
   | CloseBracket
   | OpenParen
   | CloseParen
+  | OpenAngle
+  | CloseAngle
+  | RealLiteral Scientific
+  | Int Int
   | Def
   | Comma
+  | Bottom
+  | T
+  | F
   | Label Text
   deriving stock (Eq, Show)
 

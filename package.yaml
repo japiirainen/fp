@@ -28,6 +28,7 @@ library:
     - unordered-containers
     - modern-uri
     - safe-exceptions
+    - scientific
 
 executable:
   main: Main.hs
