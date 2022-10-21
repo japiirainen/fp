@@ -4,7 +4,16 @@
 {-# LANGUAGE RecordWildCards #-}
 
 -- | This module contains the logic for lexing `fp` programs.
-module Fp.Lexer where
+module Fp.Lexer (
+  -- * Lexer
+  Token (..),
+  LocatedToken (..),
+  lex,
+  reserved,
+
+  -- * Errors related to parsing
+  ParseError (..),
+) where
 
 import Control.Applicative (Alternative (..))
 import Control.Exception.Safe (Exception (..))

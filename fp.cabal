@@ -22,7 +22,10 @@ library
   exposed-modules:
       Fp
       Fp.Lexer
+      Fp.Parser
       Fp.Location
+      Fp.Syntax
+      Fp.Input
   other-modules:
       Paths_fp
   hs-source-dirs:
@@ -31,8 +34,10 @@ library
       TypeApplications
   ghc-options: -Wall
   build-depends:
-      base
+      Earley
+    , base
     , containers
+    , filepath
     , megaparsec
     , microlens
     , microlens-th
