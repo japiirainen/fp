@@ -102,6 +102,7 @@ render = \case
   Lexer.CloseBracket -> "]"
   Lexer.OpenBracket -> "["
   Lexer.Comma -> ","
+  Lexer.Colon -> ":"
   Lexer.Plus -> "+"
   Lexer.Times -> "*"
   Lexer.Divide -> "/"
@@ -120,6 +121,11 @@ grammar = mdo
           token Lexer.Equals
           body <- primitiveExpression <|> expression
           pure Syntax.Definition {..}
+          <|> do
+            function <- primitiveExpression
+            token Lexer.Colon
+            argument <- primitiveExpression
+            pure Syntax.Application {location = Syntax.location function, ..}
           <|> compExpression
       )
 

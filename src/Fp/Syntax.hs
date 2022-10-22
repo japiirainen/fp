@@ -1,4 +1,6 @@
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Fp.Syntax (
   -- * Syntax
@@ -9,6 +11,7 @@ module Fp.Syntax (
   Combinator2 (..),
 ) where
 
+import Data.Bifunctor (Bifunctor (..))
 import Data.Scientific (Scientific)
 import Data.Sequence (Seq)
 import Data.Text (Text)
@@ -25,7 +28,27 @@ data Syntax s a
       {location :: s, c1 :: Combinator1, argument :: Syntax s a}
   | Combinator2 {location :: s, argument1 :: Syntax s a, operatorLocation :: s, c2 :: Combinator2, argument2 :: Syntax s a}
   | Primitive {location :: s, primitive :: Primitive}
-  deriving stock (Eq, Show)
+  deriving stock (Eq, Show, Foldable, Functor, Traversable)
+
+instance Bifunctor Syntax where
+  first f Application {..} =
+    Application {location = f location, function = first f function, argument = first f argument, ..}
+  first f Definition {..} =
+    Definition {location = f location, body = first f body, ..}
+  first f List {..} =
+    List {location = f location, elements = fmap (first f) elements, ..}
+  first f Atom {..} =
+    Atom {location = f location, ..}
+  first f Bottom {..} =
+    Bottom {location = f location, ..}
+  first f Combinator1 {..} =
+    Combinator1 {location = f location, argument = first f argument, ..}
+  first f Combinator2 {..} =
+    Combinator2 {location = f location, argument1 = first f argument1, operatorLocation = f operatorLocation, argument2 = first f argument2, ..}
+  first f Primitive {..} =
+    Primitive {location = f location, ..}
+
+  second = fmap
 
 -- | A scalar value in `fp` language
 data Atom

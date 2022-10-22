@@ -19,6 +19,9 @@ library:
     - Fp.Location
     - Fp.Syntax
     - Fp.Input
+    - Fp.Import
+    - Fp.Normalize
+    - Fp.Interpret
   dependencies:
     - base
     - megaparsec
