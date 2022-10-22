@@ -60,25 +60,25 @@ parseToken =
         ]
         <?> "keyword"
     , Combinators.choice
-        [ Bottom <$ symbol "⊥"
-        , T <$ symbol "T"
-        , F <$ symbol "F"
-        ]
-        <?> "built-in value"
-    , Combinators.choice
-        [ Transpose <$ (symbol "Transpose" <|> symbol "Trans.")
-        , Plus <$ symbol "+"
+        [ Plus <$ symbol "+"
         , Times <$ symbol "*"
         , Minus <$ symbol "-"
         , Divide <$ symbol "÷"
         ]
         <?> "primitive function"
     , Combinators.choice
-        [ Comp <$ (symbol "." <|> symbol "∘")
+        [ Comp <$ (symbol "Comp" <|> symbol "∘")
+        , Transpose <$ (symbol "Transpose" <|> symbol "Trans")
         , ApplyToAll <$ (symbol "ApplyToAll" <|> symbol "α")
         , Insert <$ (symbol "Insert" <|> symbol "/")
         ]
         <?> "functional form"
+    , Combinators.choice
+        [ Bottom <$ symbol "⊥"
+        , T <$ symbol "T"
+        , F <$ symbol "F"
+        ]
+        <?> "built-in value"
     , OpenBracket <$ symbol "["
     , CloseBracket <$ symbol "]"
     , OpenParen <$ symbol "("
@@ -100,6 +100,11 @@ reserved =
   HashSet.fromList
     [ "T"
     , "F"
+    , "Def"
+    , "Trans"
+    , "Transpose"
+    , "ApplyToAll"
+    , "Comp"
     ]
 
 label :: Parser Token

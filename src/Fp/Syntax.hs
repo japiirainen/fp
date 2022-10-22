@@ -5,7 +5,9 @@ module Fp.Syntax (
   Syntax (..),
   Atom (..),
   Object (..),
-  Function (..),
+  Primitive (..),
+  Combinator1 (..),
+  Combinator2 (..),
 ) where
 
 import Data.Scientific (Scientific)
@@ -16,7 +18,9 @@ data Syntax s a
   = Application {location :: s, function :: Syntax s a, argument :: Syntax s a}
   | Definition {location :: s, name :: Text, body :: Syntax s a}
   | Object {location :: s, object :: Object}
-  | Function {location :: s, f :: Function}
+  | Combinator1 {location :: s, c1 :: Combinator1, argument :: Syntax s a}
+  | Combinator2 {location :: s, c2 :: Combinator2, argument1 :: Syntax s a, argument2 :: Syntax s a}
+  | Primitive {location :: s, primitive :: Primitive}
   deriving stock (Eq, Show)
 
 -- | A scalar value in `fp` language
@@ -33,12 +37,19 @@ data Object
   | Seq [Object]
   deriving stock (Eq, Show)
 
-{- | A 'function' in the `fp` language can be either
- an `functional-form` or a `primitive-function`
--}
-data Function
-  = Transpose
-  | Composition
-  | ApplyToAll
+data Combinator1
+  = ApplyToAll
   | Insert
+  deriving stock (Eq, Show)
+
+data Combinator2
+  = Composition
+  deriving stock (Eq, Show)
+
+data Primitive
+  = Transpose
+  | Plus
+  | Times
+  | Minus
+  | Divide
   deriving stock (Eq, Show)
