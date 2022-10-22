@@ -1,14 +1,23 @@
 {-# LANGUAGE ApplicativeDo #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE RecursiveDo #-}
 
 -- | This module contains the logic for parsing fp files using @Earley@.
-module Fp.Parser () where
+module Fp.Parser (
+  -- * Parsing
+  parse,
 
-import Control.Applicative ((<|>))
-import Data.Functor (void, ($>))
+  -- * Errors related to parsing
+  ParseError (..),
+) where
+
+import Control.Applicative (Alternative (many), (<|>))
+import Data.Functor (void)
 import Data.Text (Text)
 import Fp.Input (Input)
 import Fp.Lexer (LocatedToken (LocatedToken), ParseError (..), Token)
@@ -82,9 +91,26 @@ grammar = mdo
           location <- locatedToken Lexer.Def
           name <- label
           token Lexer.Equals
-          body <- primitiveExpression
+          body <- primitiveExpression <|> expression
           pure Syntax.Definition {..}
+          <|> compExpression
       )
+
+  let comp token_ c2 subExpression = do
+        let snoc argument1 (operatorLocation, argument2) =
+              Syntax.Combinator2 {location = Syntax.location argument1, ..}
+
+        e0 <- subExpression
+
+        ses <- many do
+          s <- locatedToken token_
+          e <- subExpression
+          return (s, e)
+
+        return (foldl snoc e0 ses)
+
+  compExpression <- rule (comp Lexer.Comp Syntax.Composition primitiveExpression)
+
   primitiveExpression <-
     rule
       ( do
@@ -111,11 +137,6 @@ grammar = mdo
             argument <- primitiveExpression
             pure Syntax.Combinator1 {c1 = Syntax.ApplyToAll, ..}
           <|> do
-            argument1 <- primitiveExpression
-            location <- locatedToken Lexer.Comp
-            argument2 <- primitiveExpression
-            pure Syntax.Combinator2 {c2 = Syntax.Composition, ..}
-          <|> do
             token Lexer.OpenParen
             e <- primitiveExpression
             token Lexer.CloseParen
@@ -124,7 +145,19 @@ grammar = mdo
 
   return expression
 
--- | Parse a complete expression
+-- parse "" "(/+)∘(α*)∘Trans"
+-- Right (Combinator2 {location = 1, argument1 = Combinator2 {location = 1, argument1 = Combinator1 {location = 1, c1 = Insert, argument = Primitive {location = 2, primitive = Plus}}, operatorLocation = 4, c2 = Composition, argument2 = Combinator1 {location = 6, c1 = ApplyToAll, argument = Primitive {location = 7, primitive = Times}}}, operatorLocation = 9, c2 = Composition, argument2 = Primitive {location = 10, primitive = Transpose}})
+-- Right (Combinator2 {location = 10, argument1 = Combinator2 {location = 10, argument1 = Combinator1 {location = 10, c1 = Insert, argument = Primitive {location = 11, primitive = Plus}}, operatorLocation = 13, c2 = Composition, argument2 = Combinator1 {location = 15, c1 = ApplyToAll, argument = Primitive {location = 16, primitive = Times}}}, operatorLocation = 18, c2 = Composition, argument2 = Primitive {location = 19, primitive = Transpose}})
+
+-- >>> parse "" "Def Foobar = /-"
+-- Right (Definition {location = 0, name = "Foobar", body = Combinator1 {location = 13, c1 = Insert, argument = Primitive {location = 14, primitive = Minus}}})
+
+-- >>> parse "" "Def IP = (/+)∘(α*)∘Trans"
+-- Right (Definition {location = 0, name = "IP", body = Combinator2 {location = 10, argument1 = Combinator2 {location = 10, argument1 = Combinator1 {location = 10, c1 = Insert, argument = Primitive {location = 11, primitive = Plus}}, operatorLocation = 13, c2 = Composition, argument2 = Combinator1 {location = 15, c1 = ApplyToAll, argument = Primitive {location = 16, primitive = Times}}}, operatorLocation = 18, c2 = Composition, argument2 = Primitive {location = 19, primitive = Transpose}}})
+--
+
+-- >>> 1 + 1
+-- 2
 parse ::
   -- | Name of the input (used for error messages)
   String ->

@@ -10,7 +10,7 @@ described in his 1977 Turing Award lecture.
 Def Innerproduct ≡ (Insert +)∘(ApplyToAll *)∘Transpose
 
 -- or abbreviated
-Def IP ≡ (/+)∘(α*)∘Trans.
+Def IP ≡ (/+)∘(α*)∘Trans
 ```
 
 You can also run the test suite.

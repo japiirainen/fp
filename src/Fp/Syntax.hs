@@ -19,7 +19,7 @@ data Syntax s a
   | Definition {location :: s, name :: Text, body :: Syntax s a}
   | Object {location :: s, object :: Object}
   | Combinator1 {location :: s, c1 :: Combinator1, argument :: Syntax s a}
-  | Combinator2 {location :: s, c2 :: Combinator2, argument1 :: Syntax s a, argument2 :: Syntax s a}
+  | Combinator2 {location :: s, argument1 :: Syntax s a, operatorLocation :: s, c2 :: Combinator2, argument2 :: Syntax s a}
   | Primitive {location :: s, primitive :: Primitive}
   deriving stock (Eq, Show)
 

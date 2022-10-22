@@ -67,7 +67,7 @@ parseToken =
         ]
         <?> "primitive function"
     , Combinators.choice
-        [ Comp <$ (symbol "Comp" <|> symbol "∘")
+        [ Comp <$ (symbol "." <|> symbol "∘")
         , Transpose <$ (symbol "Transpose" <|> symbol "Trans")
         , ApplyToAll <$ (symbol "ApplyToAll" <|> symbol "α")
         , Insert <$ (symbol "Insert" <|> symbol "/")
