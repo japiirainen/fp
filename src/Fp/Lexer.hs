@@ -62,7 +62,6 @@ parseToken =
     , Combinators.choice
         [ Plus <$ symbol "+"
         , Times <$ symbol "*"
-        , Minus <$ symbol "-"
         , Divide <$ symbol "÷"
         ]
         <?> "primitive function"
@@ -155,7 +154,6 @@ data Token
   | Insert
   | Plus
   | Times
-  | Minus
   | Divide
   | OpenBracket
   | CloseBracket

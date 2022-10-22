@@ -104,7 +104,6 @@ render = \case
   Lexer.Comma -> ","
   Lexer.Plus -> "+"
   Lexer.Times -> "*"
-  Lexer.Minus -> "-"
   Lexer.Divide -> "/"
   Lexer.Dash -> "-"
   Lexer.RealLiteral _ -> "a real literal"
@@ -181,7 +180,7 @@ grammar = mdo
             location <- locatedToken Lexer.Times
             pure Syntax.Primitive {primitive = Syntax.Times, ..}
           <|> do
-            location <- locatedToken Lexer.Minus
+            location <- locatedToken Lexer.Dash
             pure Syntax.Primitive {primitive = Syntax.Minus, ..}
           <|> do
             location <- locatedToken Lexer.Divide
@@ -203,18 +202,6 @@ grammar = mdo
 
   return expression
 
--- >>> parse "" "Def Foo = <1, <2, 4, 5>, 3>"
--- Right (Definition {location = 0, name = "Foo", body = List {location = 10, elements = fromList [Atom {location = 11, atom = Int 1},List {location = 14, elements = fromList [Atom {location = 15, atom = Int 2},Atom {location = 18, atom = Int 4},Atom {location = 21, atom = Int 5}]},Atom {location = 25, atom = Int 3}]}})
-
--- >>> parse "" "Def Foobar = -12"
--- Left (ParsingFailed (Location {name = "", code = "Def Foobar = -12", offset = 14}))
-
--- >>> parse "" "Def IP = (/+)∘(α*)∘Trans"
--- Right (Definition {location = 0, name = "IP", body = Combinator2 {location = 10, argument1 = Combinator2 {location = 10, argument1 = Combinator1 {location = 10, c1 = Insert, argument = Primitive {location = 11, primitive = Plus}}, operatorLocation = 13, c2 = Composition, argument2 = Combinator1 {location = 15, c1 = ApplyToAll, argument = Primitive {location = 16, primitive = Times}}}, operatorLocation = 18, c2 = Composition, argument2 = Primitive {location = 19, primitive = Transpose}}})
---
-
--- >>> 1 + 1
--- 2
 parse ::
   -- | Name of the input (used for error messages)
   String ->
