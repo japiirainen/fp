@@ -86,6 +86,7 @@ parseToken =
     , OpenAngle <$ symbol "<"
     , CloseAngle <$ symbol ">"
     , Comma <$ symbol ","
+    , Dash <$ symbol "-"
     , number
     ]
 
@@ -162,6 +163,7 @@ data Token
   | CloseParen
   | OpenAngle
   | CloseAngle
+  | Dash
   | RealLiteral Scientific
   | Int Int
   | Def

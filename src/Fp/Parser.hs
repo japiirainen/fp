@@ -16,8 +16,10 @@ module Fp.Parser (
   ParseError (..),
 ) where
 
-import Control.Applicative (Alternative (many), (<|>))
-import Data.Functor (void)
+import Control.Applicative (Alternative (many), optional, (<|>))
+import Control.Applicative.Combinators (sepBy)
+import Data.Functor (void, ($>))
+import Data.Scientific (Scientific)
 import Data.Text (Text)
 import Fp.Input (Input)
 import Fp.Lexer (LocatedToken (LocatedToken), ParseError (..), Token)
@@ -25,6 +27,7 @@ import Fp.Location (Location (..), Offset (..))
 import Fp.Syntax (Syntax)
 import Text.Earley (Grammar, Prod, Report (..), rule, (<?>))
 
+import qualified Data.Sequence as Seq
 import qualified Data.Text as Text
 import qualified Fp.Lexer as Lexer
 import qualified Fp.Syntax as Syntax
@@ -35,6 +38,14 @@ type Parser r = Prod r Text LocatedToken
 matchLabel :: Token -> Maybe Text
 matchLabel (Lexer.Label l) = Just l
 matchLabel _ = Nothing
+
+matchReal :: Token -> Maybe Scientific
+matchReal (Lexer.RealLiteral n) = Just n
+matchReal _ = Nothing
+
+matchInt :: Token -> Maybe Int
+matchInt (Lexer.Int n) = Just n
+matchInt _ = Nothing
 
 terminal :: (Token -> Maybe a) -> Parser r a
 terminal match = Earley.terminal match'
@@ -48,6 +59,22 @@ token :: Token -> Parser r ()
 token t = void (Earley.satisfy predicate <?> render t)
   where
     predicate locatedToken_ = Lexer.token locatedToken_ == t
+
+locatedTerminal :: (Token -> Maybe a) -> Parser r (Offset, a)
+locatedTerminal match = Earley.terminal match'
+  where
+    match' locatedToken_@LocatedToken {start} = do
+      a <- match (Lexer.token locatedToken_)
+      return (start, a)
+
+locatedLabel :: Parser r (Offset, Text)
+locatedLabel = locatedTerminal matchLabel
+
+locatedReal :: Parser r (Offset, Scientific)
+locatedReal = locatedTerminal matchReal
+
+locatedInt :: Parser r (Offset, Int)
+locatedInt = locatedTerminal matchInt
 
 locatedToken :: Token -> Parser r Offset
 locatedToken expected =
@@ -79,6 +106,7 @@ render = \case
   Lexer.Times -> "*"
   Lexer.Minus -> "-"
   Lexer.Divide -> "/"
+  Lexer.Dash -> "-"
   Lexer.RealLiteral _ -> "a real literal"
   Lexer.Int _ -> "an integer"
   Lexer.Def -> "Def"
@@ -114,8 +142,38 @@ grammar = mdo
   primitiveExpression <-
     rule
       ( do
-          location <- locatedToken Lexer.Transpose
-          pure Syntax.Primitive {primitive = Syntax.Transpose, ..}
+          location <- locatedToken Lexer.OpenAngle
+          optional (token Lexer.Comma)
+          elements <- primitiveExpression `sepBy` token Lexer.Comma
+          optional (token Lexer.Comma)
+          token Lexer.CloseAngle
+          pure Syntax.List {elements = Seq.fromList elements, ..}
+          <|> do
+            location <- locatedToken Lexer.T
+            pure Syntax.Atom {atom = Syntax.Bool True, ..}
+          <|> do
+            location <- locatedToken Lexer.F
+            pure Syntax.Atom {atom = Syntax.Bool False, ..}
+          <|> do
+            ~(location, name) <- locatedLabel
+            pure Syntax.Atom {atom = Syntax.Symbol name, ..}
+          <|> do
+            sign <- (token Lexer.Dash $> negate) <|> pure id
+            ~(location, n) <- locatedReal
+            pure Syntax.Atom {atom = Syntax.Real (sign n), ..}
+          <|> do
+            token Lexer.Dash
+            ~(location, n) <- locatedInt
+            pure Syntax.Atom {atom = Syntax.Int (fromIntegral (negate n)), ..}
+          <|> do
+            ~(location, n) <- locatedInt
+            pure Syntax.Atom {atom = Syntax.Int (fromIntegral n), ..}
+          <|> do
+            location <- locatedToken Lexer.Bottom
+            pure Syntax.Bottom {..}
+          <|> do
+            location <- locatedToken Lexer.Transpose
+            pure Syntax.Primitive {primitive = Syntax.Transpose, ..}
           <|> do
             location <- locatedToken Lexer.Plus
             pure Syntax.Primitive {primitive = Syntax.Plus, ..}
@@ -145,12 +203,11 @@ grammar = mdo
 
   return expression
 
--- parse "" "(/+)∘(α*)∘Trans"
--- Right (Combinator2 {location = 1, argument1 = Combinator2 {location = 1, argument1 = Combinator1 {location = 1, c1 = Insert, argument = Primitive {location = 2, primitive = Plus}}, operatorLocation = 4, c2 = Composition, argument2 = Combinator1 {location = 6, c1 = ApplyToAll, argument = Primitive {location = 7, primitive = Times}}}, operatorLocation = 9, c2 = Composition, argument2 = Primitive {location = 10, primitive = Transpose}})
--- Right (Combinator2 {location = 10, argument1 = Combinator2 {location = 10, argument1 = Combinator1 {location = 10, c1 = Insert, argument = Primitive {location = 11, primitive = Plus}}, operatorLocation = 13, c2 = Composition, argument2 = Combinator1 {location = 15, c1 = ApplyToAll, argument = Primitive {location = 16, primitive = Times}}}, operatorLocation = 18, c2 = Composition, argument2 = Primitive {location = 19, primitive = Transpose}})
+-- >>> parse "" "Def Foo = <1, <2, 4, 5>, 3>"
+-- Right (Definition {location = 0, name = "Foo", body = List {location = 10, elements = fromList [Atom {location = 11, atom = Int 1},List {location = 14, elements = fromList [Atom {location = 15, atom = Int 2},Atom {location = 18, atom = Int 4},Atom {location = 21, atom = Int 5}]},Atom {location = 25, atom = Int 3}]}})
 
--- >>> parse "" "Def Foobar = /-"
--- Right (Definition {location = 0, name = "Foobar", body = Combinator1 {location = 13, c1 = Insert, argument = Primitive {location = 14, primitive = Minus}}})
+-- >>> parse "" "Def Foobar = -12"
+-- Left (ParsingFailed (Location {name = "", code = "Def Foobar = -12", offset = 14}))
 
 -- >>> parse "" "Def IP = (/+)∘(α*)∘Trans"
 -- Right (Definition {location = 0, name = "IP", body = Combinator2 {location = 10, argument1 = Combinator2 {location = 10, argument1 = Combinator1 {location = 10, c1 = Insert, argument = Primitive {location = 11, primitive = Plus}}, operatorLocation = 13, c2 = Composition, argument2 = Combinator1 {location = 15, c1 = ApplyToAll, argument = Primitive {location = 16, primitive = Times}}}, operatorLocation = 18, c2 = Composition, argument2 = Primitive {location = 19, primitive = Transpose}}})
