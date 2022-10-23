@@ -22,7 +22,7 @@ data Syntax s a
   | Bottom {location :: s}
   | Atom {location :: s, atom :: Atom}
   | List
-      {location :: s, elements :: [(Syntax s a)]}
+      {location :: s, elements :: [Syntax s a]}
   | Combinator1
       {location :: s, c1 :: Combinator1, argument :: Syntax s a}
   | Combinator2 {location :: s, argument1 :: Syntax s a, operatorLocation :: s, c2 :: Combinator2, argument2 :: Syntax s a}

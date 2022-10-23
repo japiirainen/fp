@@ -110,7 +110,7 @@ render = \case
   Lexer.Int _ -> "an integer"
   Lexer.Def -> "Def"
 
-grammar :: Grammar r (Parser r ([Syntax Offset Input]))
+grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
   expression <-
     rule
@@ -207,14 +207,12 @@ grammar = mdo
 
   return (many expression)
 
--- >>> parse "" "Def IP ≡ (/+)∘(α*)∘Trans"
-
 parse ::
   -- | Name of the input (used for error messages)
   String ->
   -- | Source code
   Text ->
-  Either ParseError ([Syntax Offset Input])
+  Either ParseError [Syntax Offset Input]
 parse name code = do
   tokens <- Lexer.lex name code
 

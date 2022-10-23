@@ -1,16 +1,12 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeApplications #-}
 
 -- | This module implements the main interpretation function
 module Fp.Interpret (
   -- * Interpret
   Input (..),
   interpret,
-  interpretWith,
 
   -- * Errors related to interpretation
   InterpretError (..),
@@ -35,20 +31,13 @@ interpret ::
   (MonadError InterpretError m, MonadIO m) =>
   Input ->
   m Value
-interpret input = interpretWith input
-
--- | Like `interpret`, but accepts a custom list of bindings
-interpretWith ::
-  (MonadError InterpretError m, MonadIO m) =>
-  Input ->
-  m Value
-interpretWith input = do
+interpret input = do
   eitherPartiallyResolved <- do
     liftIO
       ( Exception.catches
           (fmap Right (Import.resolve input))
-          [ Handler (\e -> return (Left (ParseError e)))
-          , Handler (\e -> return (Left (ImportError e)))
+          [ Handler (return . Left . ParseError)
+          , Handler (return . Left . ImportError)
           ]
       )
 

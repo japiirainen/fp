@@ -25,7 +25,7 @@ import qualified Fp.Parser as Parser
 import qualified Text.URI as URI
 
 -- | Resolve an `Input` by returning the source code that it represents
-resolve :: Input -> IO ([Syntax Location Input])
+resolve :: Input -> IO [Syntax Location Input]
 resolve input = case input of
   URI _ -> throw "URI import not implemented!"
   Path path -> readPath path
