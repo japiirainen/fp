@@ -27,7 +27,6 @@ import Fp.Location (Location (..), Offset (..))
 import Fp.Syntax (Syntax)
 import Text.Earley (Grammar, Prod, Report (..), rule, (<?>))
 
-import qualified Data.Sequence as Seq
 import qualified Data.Text as Text
 import qualified Fp.Lexer as Lexer
 import qualified Fp.Syntax as Syntax
@@ -122,9 +121,9 @@ grammar = mdo
           body <- primitiveExpression <|> expression
           pure Syntax.Definition {..}
           <|> do
-            function <- primitiveExpression
+            function <- primitiveExpression <|> expression
             token Lexer.Colon
-            argument <- primitiveExpression
+            argument <- primitiveExpression <|> expression
             pure Syntax.Application {location = Syntax.location function, ..}
           <|> compExpression
       )
@@ -152,7 +151,7 @@ grammar = mdo
           elements <- primitiveExpression `sepBy` token Lexer.Comma
           optional (token Lexer.Comma)
           token Lexer.CloseAngle
-          pure Syntax.List {elements = Seq.fromList elements, ..}
+          pure Syntax.List {..}
           <|> do
             location <- locatedToken Lexer.T
             pure Syntax.Atom {atom = Syntax.Bool True, ..}
@@ -207,6 +206,8 @@ grammar = mdo
       )
 
   return (many expression)
+
+-- >>> parse "" "Def IP ≡ (/+)∘(α*)∘Trans"
 
 parse ::
   -- | Name of the input (used for error messages)

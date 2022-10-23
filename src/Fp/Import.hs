@@ -20,6 +20,7 @@ import Fp.Syntax (Syntax)
 
 import qualified Control.Exception.Safe as Exception
 import qualified Data.Text as Text
+import qualified Data.Text.IO as Text.IO
 import qualified Fp.Parser as Parser
 import qualified Text.URI as URI
 
@@ -27,7 +28,7 @@ import qualified Text.URI as URI
 resolve :: Input -> IO ([Syntax Location Input])
 resolve input = case input of
   URI _ -> throw "URI import not implemented!"
-  Path _ -> throw "Path import not implemented!"
+  Path path -> readPath path
   Code name code -> do
     result <- case Parser.parse name code of
       Left e -> Exception.throw e
@@ -37,6 +38,14 @@ resolve input = case input of
 
     return $ map (first locate) result
   where
+    readPath path = do
+      code <- Text.IO.readFile path
+      result <- case Parser.parse path code of
+        Left e -> Exception.throw e
+        Right result -> return result
+      let locate offset = Location {name = path, ..}
+      return $ map (first locate) result
+
     throw e = Exception.throw (ImportError input e)
 
 -- | The base error for `ImportError` (without the @input@ information)

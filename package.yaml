@@ -22,6 +22,8 @@ library:
     - Fp.Import
     - Fp.Normalize
     - Fp.Interpret
+    - Fp.Value
+    - Fp.REPL
   dependencies:
     - base
     - megaparsec
@@ -37,6 +39,12 @@ library:
     - scientific
     - Earley
     - filepath
+    - prettyprinter
+    - prettyprinter-ansi-terminal
+    - optparse-applicative
+    - haskeline
+    - ansi-terminal
+    - repline
 
 executable:
   main: Main.hs

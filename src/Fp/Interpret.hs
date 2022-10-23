@@ -19,8 +19,8 @@ module Fp.Interpret (
 import Control.Exception.Safe (Exception (..), Handler (..))
 import Control.Monad.Except (MonadError (..))
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Data.Text (Text)
 import Fp.Input (Input (..))
+import Fp.Value (Value)
 
 import qualified Control.Exception.Safe as Exception
 import qualified Fp.Import as Import
@@ -34,14 +34,14 @@ import qualified Fp.Parser as Parser
 interpret ::
   (MonadError InterpretError m, MonadIO m) =>
   Input ->
-  m Text
+  m Value
 interpret input = interpretWith input
 
 -- | Like `interpret`, but accepts a custom list of bindings
 interpretWith ::
   (MonadError InterpretError m, MonadIO m) =>
   Input ->
-  m Text
+  m Value
 interpretWith input = do
   eitherPartiallyResolved <- do
     liftIO
@@ -56,7 +56,7 @@ interpretWith input = do
     Left interpretError -> throwError interpretError
     Right resolved -> pure resolved
 
-  return (Normalize.evaluate resolved)
+  return $ last (Normalize.evaluate [] resolved)
 
 -- | Errors related to interpretation of an expression
 data InterpretError

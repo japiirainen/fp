@@ -29,6 +29,8 @@ library
       Fp.Import
       Fp.Normalize
       Fp.Interpret
+      Fp.Value
+      Fp.REPL
   other-modules:
       Paths_fp
   hs-source-dirs:
@@ -38,15 +40,21 @@ library
   ghc-options: -Wall
   build-depends:
       Earley
+    , ansi-terminal
     , base
     , containers
     , filepath
+    , haskeline
     , megaparsec
     , microlens
     , microlens-th
     , modern-uri
     , mtl
+    , optparse-applicative
     , parser-combinators
+    , prettyprinter
+    , prettyprinter-ansi-terminal
+    , repline
     , safe-exceptions
     , scientific
     , text
