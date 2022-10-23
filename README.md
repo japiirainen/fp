@@ -34,8 +34,11 @@ will also cover the usage of the tools provided by `fp`.
 
 ### Command line
 
+`fp` can be used without explicitly installing it via nix!
+
 ```
-cabal run fp -- --help                  
+nix run github:japiirainen/fp -- --help
+                 
 Up to date
 Usage: fp COMMAND
 
