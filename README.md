@@ -110,3 +110,8 @@ nix-shell
 - Run `./bin/hoogle` to start Hoogle with packages in your cabal file.
 - Run `treefmt` in nix shell to autoformat the project. This uses treefmt, which uses ./treefmt.toml (where fourmolu and nixpkgs-fmt are specified).
 - Run the application without installing: `nix run github:japiirainen/fp` (or `nix run .` from checkout)
+
+`fp` is a programming language heavily inspired by the language John Backus
+described in his 1977 Turing Award lecture.
+
+Currently there is enough of an implementation to interpret the first example given by Backus in his paper. This program is calculating the 'inner product'.
