@@ -8,6 +8,7 @@ module Fp.Value (
   Value (..),
 ) where
 
+import Data.Text (Text)
 import Fp.Syntax (Atom, Combinator1, Combinator2, Primitive)
 
 {- | This type represents a fully evaluated expression with no reducible
@@ -18,7 +19,8 @@ import Fp.Syntax (Atom, Combinator1, Combinator2, Primitive)
     * To use a more efficient representation for reduction purposes
 -}
 data Value
-  = Application Value Value
+  = Variable Text
+  | Application Value Value
   | List [Value]
   | Atom Atom
   | Bottom

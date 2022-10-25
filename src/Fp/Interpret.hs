@@ -45,7 +45,7 @@ interpret input = do
     Left interpretError -> throwError interpretError
     Right resolved -> pure resolved
 
-  return $ last (Normalize.evaluate [] resolved)
+  return $ last (Normalize.evaluate resolved)
 
 -- | Errors related to interpretation of an expression
 data InterpretError

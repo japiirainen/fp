@@ -17,7 +17,8 @@ import Data.Text (Text)
 
 -- | The surface syntax of the language
 data Syntax s a
-  = Application {location :: s, function :: Syntax s a, argument :: Syntax s a}
+  = Variable {location :: s, name :: Text}
+  | Application {location :: s, function :: Syntax s a, argument :: Syntax s a}
   | Definition {location :: s, name :: Text, body :: Syntax s a}
   | Bottom {location :: s}
   | Atom {location :: s, atom :: Atom}
@@ -30,6 +31,8 @@ data Syntax s a
   deriving stock (Eq, Show, Foldable, Functor, Traversable)
 
 instance Bifunctor Syntax where
+  first f Variable {..} =
+    Variable {location = f location, ..}
   first f Application {..} =
     Application {location = f location, function = first f function, argument = first f argument, ..}
   first f Definition {..} =

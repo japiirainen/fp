@@ -91,7 +91,7 @@ parseToken =
     ]
 
 isLabel0 :: Char -> Bool
-isLabel0 = Char.isUpper
+isLabel0 = Char.isAlpha
 
 isLabel :: Char -> Bool
 isLabel c = Char.isAlphaNum c || c == '_' || c == '-' || c == '/'
@@ -106,6 +106,9 @@ reserved =
     , "Transpose"
     , "ApplyToAll"
     , "Comp"
+    , "α"
+    , "+"
+    , "*"
     ]
 
 label :: Parser Token
@@ -114,7 +117,9 @@ label = (lexeme . try) do
   cs <- Megaparsec.takeWhileP (Just "label character") isLabel
   let result = Text.cons c0 cs
   Monad.guard (not (HashSet.member result reserved))
-  return (Label result)
+  if Text.toUpper result == result
+    then return (ObjectLabel result)
+    else return (Label result)
 
 parseLocatedToken :: Parser LocatedToken
 parseLocatedToken = do
@@ -171,7 +176,12 @@ data Token
   | Bottom
   | T
   | F
-  | Label Text
+  | ObjectLabel Text
+  | --  ^ Object label is a label that consists
+    -- of only upper-case letters excluding 'T' and 'F'.
+    Label Text
+  --  ^ Label is a label that consists of lower and upper-case
+  -- letters.
   deriving stock (Eq, Show)
 
 {- | A token with offset information attached,
@@ -192,4 +202,4 @@ instance Exception ParseError where
       (Location.renderError "Invalid input - Lexing failed" location)
   displayException (ParsingFailed location) =
     Text.unpack
-      (Location.renderError "Invalid input - Lexing failed" location)
+      (Location.renderError "Invalid input - Parsing failed" location)

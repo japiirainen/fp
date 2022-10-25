@@ -24,7 +24,7 @@ The paper can be found [here](https://dl.acm.org/doi/10.1145/359576.359579).
 Def Innerproduct ≡ (Insert +)∘(ApplyToAll *)∘Transpose
 
 -- or abbreviated
-Def IP ≡ (/+)∘(α*)∘Trans
+Def ip ≡ (/+)∘(α*)∘Trans
 ```
 
 ## Usage
@@ -57,9 +57,9 @@ Available commands:
 The `interpret` command can be used to interpret `fp` files.
 
 ```haskell
-Def IP ≡ (/+)∘(α*)∘Trans
+Def ip ≡ (/+)∘(α*)∘Trans
 
-IP:<<1,2,3>,<6,5,4>>
+ip:<<1,2,3>,<6,5,4>>
 ```
 
 This program lives in `examples/IP.fp` and can be interpreted like this.

@@ -38,6 +38,10 @@ matchLabel :: Token -> Maybe Text
 matchLabel (Lexer.Label l) = Just l
 matchLabel _ = Nothing
 
+matchObjectLabel :: Token -> Maybe Text
+matchObjectLabel (Lexer.ObjectLabel l) = Just l
+matchObjectLabel _ = Nothing
+
 matchReal :: Token -> Maybe Scientific
 matchReal (Lexer.RealLiteral n) = Just n
 matchReal _ = Nothing
@@ -69,6 +73,9 @@ locatedTerminal match = Earley.terminal match'
 locatedLabel :: Parser r (Offset, Text)
 locatedLabel = locatedTerminal matchLabel
 
+locatedObjectLabel :: Parser r (Offset, Text)
+locatedObjectLabel = locatedTerminal matchObjectLabel
+
 locatedReal :: Parser r (Offset, Scientific)
 locatedReal = locatedTerminal matchReal
 
@@ -93,6 +100,7 @@ render = \case
   Lexer.Comp -> "Comp"
   Lexer.Bottom -> "Bottom"
   Lexer.Label _ -> "a label"
+  Lexer.ObjectLabel _ -> "a object label"
   Lexer.Transpose -> "Transpose"
   Lexer.CloseAngle -> ">"
   Lexer.OpenAngle -> "<"
@@ -159,8 +167,11 @@ grammar = mdo
             location <- locatedToken Lexer.F
             pure Syntax.Atom {atom = Syntax.Bool False, ..}
           <|> do
-            ~(location, name) <- locatedLabel
+            ~(location, name) <- locatedObjectLabel
             pure Syntax.Atom {atom = Syntax.Symbol name, ..}
+          <|> do
+            ~(location, name) <- locatedLabel
+            pure Syntax.Variable {name = name, ..}
           <|> do
             sign <- (token Lexer.Dash $> negate) <|> pure id
             ~(location, n) <- locatedReal
