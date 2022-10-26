@@ -15,36 +15,34 @@ license-file:  LICENSE
 build-type:    Simple
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/japiirainen/fp
 
 library
   exposed-modules:
-      Fp
-      Fp.Lexer
-      Fp.Parser
-      Fp.Location
-      Fp.Syntax
-      Fp.Input
-      Fp.Import
-      Fp.Normalize
-      Fp.Interpret
-      Fp.Value
-      Fp.REPL
-      Fp.Width
-      Fp.Pretty
-  other-modules:
-      Paths_fp
-  hs-source-dirs:
-      src
-  default-extensions:
-      TypeApplications
-  ghc-options: -Wall
+    Fp
+    Fp.Import
+    Fp.Input
+    Fp.Interpret
+    Fp.Lexer
+    Fp.Location
+    Fp.Normalize
+    Fp.Parser
+    Fp.Pretty
+    Fp.REPL
+    Fp.Syntax
+    Fp.Value
+    Fp.Width
+
+  other-modules:      Paths_fp
+  hs-source-dirs:     src
+  default-extensions: TypeApplications
+  ghc-options:        -Wall
   build-depends:
-      Earley
-    , ansi-terminal
+      ansi-terminal
     , base
     , containers
+    , Earley
     , filepath
     , haskeline
     , megaparsec
@@ -62,49 +60,44 @@ library
     , terminal-size
     , text
     , unordered-containers
-  default-language: Haskell2010
+
+  default-language:   Haskell2010
 
 executable fp
-  main-is: Main.hs
-  other-modules:
-      Paths_fp
-  hs-source-dirs:
-      app
-  default-extensions:
-      TypeApplications
-  ghc-options: -Wall
+  main-is:            Main.hs
+  other-modules:      Paths_fp
+  hs-source-dirs:     app
+  default-extensions: TypeApplications
+  ghc-options:        -Wall
   build-depends:
       base
     , fp
-  default-language: Haskell2010
+
+  default-language:   Haskell2010
 
 test-suite doctest
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
-  other-modules:
-      Paths_fp
-  hs-source-dirs:
-      doctest
-  default-extensions:
-      TypeApplications
-  ghc-options: -Wall
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  other-modules:      Paths_fp
+  hs-source-dirs:     doctest
+  default-extensions: TypeApplications
+  ghc-options:        -Wall
   build-depends:
       base
     , doctest
     , fp
-  default-language: Haskell2010
+
+  default-language:   Haskell2010
 
 test-suite tasty
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
-  other-modules:
-      Paths_fp
-  hs-source-dirs:
-      tasty
-  default-extensions:
-      TypeApplications
-  ghc-options: -Wall
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
+  other-modules:      Paths_fp
+  hs-source-dirs:     tasty
+  default-extensions: TypeApplications
+  ghc-options:        -Wall
   build-depends:
       base
     , fp
-  default-language: Haskell2010
+
+  default-language:   Haskell2010

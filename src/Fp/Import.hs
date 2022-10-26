@@ -60,7 +60,8 @@ data ImportError = ImportError
 instance Exception ImportError where
   displayException ImportError {..} =
     Text.unpack
-      ( "Import resolution failed: " <> renderedInput
+      ( "Import resolution failed: "
+          <> renderedInput
           <> "\n\
              \\n\
              \"

@@ -172,7 +172,8 @@ data EvaluationError
 
 instance Exception EvaluationError where
   displayException (UnboundVariable location name) =
-    "Unbound variable: " <> Text.unpack var
+    "Unbound variable: "
+      <> Text.unpack var
       <> "\n\
          \\n\
          \"
