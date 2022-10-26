@@ -106,6 +106,7 @@ data Primitive
   | Times
   | Minus
   | Divide
+  | AtomP
   deriving stock (Eq, Show)
 
 instance Pretty Primitive where
@@ -114,6 +115,7 @@ instance Pretty Primitive where
   pretty Times = Pretty.builtin "*"
   pretty Minus = Pretty.builtin "-"
   pretty Divide = Pretty.builtin "÷"
+  pretty AtomP = Pretty.builtin "atom"
 
 -- | Pretty-print a @Text@ literal
 prettyTextLiteral :: Text -> Doc AnsiStyle

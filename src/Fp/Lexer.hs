@@ -63,13 +63,14 @@ parseToken =
         [ Plus <$ symbol "+"
         , Times <$ symbol "*"
         , Divide <$ symbol "÷"
+        , Transpose <$ (symbol "transpose" <|> symbol "⍉")
+        , Atom <$ symbol "atom"
         ]
         <?> "primitive function"
     , Combinators.choice
         [ Comp <$ (symbol "." <|> symbol "∘")
-        , Transpose <$ (symbol "Transpose" <|> symbol "⍉")
-        , ApplyToAll <$ (symbol "ApplyToAll" <|> symbol "α")
-        , Insert <$ (symbol "Insert" <|> symbol "/")
+        , ApplyToAll <$ (symbol "applyToAll" <|> symbol "α")
+        , Insert <$ (symbol "insert" <|> symbol "/")
         ]
         <?> "functional form"
     , Combinators.choice
@@ -102,10 +103,11 @@ reserved =
     [ "T"
     , "F"
     , "Def"
-    , "Trans"
-    , "Transpose"
-    , "ApplyToAll"
-    , "Comp"
+    , "transpose"
+    , "applyToAll"
+    , "insert"
+    , "atom"
+    , "."
     , "α"
     , "+"
     , "*"
@@ -158,6 +160,7 @@ data Token
   | Transpose
   | ApplyToAll
   | Insert
+  | Atom
   | Plus
   | Times
   | Divide
@@ -176,12 +179,12 @@ data Token
   | Bottom
   | T
   | F
-  | ObjectLabel Text
-  | --  ^ Object label is a label that consists
+  | --  | Object label is a label that consists
     -- of only upper-case letters excluding 'T' and 'F'.
+    ObjectLabel Text
+  | --  | Label is a label that consists of lower and upper-case
+    -- letters.
     Label Text
-  --  ^ Label is a label that consists of lower and upper-case
-  -- letters.
   deriving stock (Eq, Show)
 
 {- | A token with offset information attached,

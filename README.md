@@ -21,7 +21,7 @@ The paper can be found [here](https://dl.acm.org/doi/10.1145/359576.359579).
 ## Examples of `fp`
 
 ```haskell
-Def Innerproduct ≡ (Insert +)∘(ApplyToAll *)∘Transpose
+Def Innerproduct ≡ (insert +)∘(applyToAll *)∘transpose
 
 -- or abbreviated
 Def ip ≡ /+∘α*∘⍉

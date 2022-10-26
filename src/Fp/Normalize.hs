@@ -23,7 +23,7 @@ import Data.Void (Void)
 import Fp.Input (Input)
 import Fp.Location (Location)
 import Fp.Pretty (Pretty)
-import Fp.Syntax (Atom (..), Combinator1 (ApplyToAll, Insert), Combinator2 (Composition), Primitive (Divide, Minus, Plus, Times, Transpose), Syntax)
+import Fp.Syntax (Atom (..), Combinator1 (ApplyToAll, Insert), Combinator2 (Composition), Primitive (..), Syntax)
 import Fp.Value (Value (..))
 import Prelude hiding (succ)
 
@@ -99,6 +99,10 @@ evalSingle = \case
      evaluating all built-in functions.
 -}
 apply :: Value -> Value -> Value
+apply (Primitive AtomP) arg = case arg of
+  Atom _ -> Atom (Bool True)
+  Bottom -> Bottom
+  _ -> Atom (Bool False)
 apply (Primitive Plus) (List vs) = case take 2 vs of
   [Value.Atom (Int x), Atom (Int y)] -> Atom (Int (x + y))
   _ -> Bottom
