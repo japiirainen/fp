@@ -119,6 +119,7 @@ render = \case
   Lexer.RealLiteral _ -> "a real literal"
   Lexer.Int _ -> "an integer"
   Lexer.Def -> "Def"
+  Lexer.EmptySeq -> "⌽"
 
 grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
@@ -162,6 +163,9 @@ grammar = mdo
           optional (token Lexer.Comma)
           token Lexer.CloseAngle
           pure Syntax.List {..}
+          <|> do
+            location <- locatedToken Lexer.EmptySeq
+            pure Syntax.List {elements = [], ..}
           <|> do
             location <- locatedToken Lexer.T
             pure Syntax.Atom {atom = Syntax.Bool True, ..}

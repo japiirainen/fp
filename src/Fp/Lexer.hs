@@ -86,6 +86,7 @@ parseToken =
     , CloseParen <$ symbol ")"
     , OpenAngle <$ symbol "<"
     , CloseAngle <$ symbol ">"
+    , EmptySeq <$ symbol "⌽" 
     , Comma <$ symbol ","
     , Dash <$ symbol "-"
     , Colon <$ symbol ":"
@@ -173,6 +174,7 @@ data Token
   | CloseParen
   | OpenAngle
   | CloseAngle
+  | EmptySeq
   | Dash
   | Colon
   | RealLiteral Scientific
