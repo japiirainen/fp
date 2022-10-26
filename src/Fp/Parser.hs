@@ -105,6 +105,7 @@ render = \case
   Lexer.Atom -> "atom"
   Lexer.Eq -> "eq"
   Lexer.Null -> "null"
+  Lexer.Reverse -> "reverse"
   Lexer.CloseAngle -> ">"
   Lexer.OpenAngle -> "<"
   Lexer.CloseParen -> ")"
@@ -205,6 +206,9 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Null
             pure Syntax.Primitive {primitive = Syntax.Null, ..}
+          <|> do
+            location <- locatedToken Lexer.Reverse
+            pure Syntax.Primitive {primitive = Syntax.Reverse, ..}
           <|> do
             location <- locatedToken Lexer.Plus
             pure Syntax.Primitive {primitive = Syntax.Plus, ..}

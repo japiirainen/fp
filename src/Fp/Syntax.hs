@@ -109,6 +109,7 @@ data Primitive
   | AtomP
   | Eq
   | Null
+  | Reverse
   deriving stock (Eq, Show)
 
 instance Pretty Primitive where
@@ -120,6 +121,7 @@ instance Pretty Primitive where
   pretty AtomP = Pretty.builtin "atom"
   pretty Eq = Pretty.builtin "eq"
   pretty Null = Pretty.builtin "null"
+  pretty Reverse = Pretty.builtin "reverse"
 
 -- | Pretty-print a @Text@ literal
 prettyTextLiteral :: Text -> Doc AnsiStyle

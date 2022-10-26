@@ -67,6 +67,7 @@ parseToken =
         , Atom <$ symbol "atom"
         , Eq <$ symbol "eq"
         , Null <$ symbol "null"
+        , Reverse <$ symbol "reverse"
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -112,6 +113,7 @@ reserved =
     , "atom"
     , "eq"
     , "null"
+    , "reverse"
     , "."
     , "α"
     , "+"
@@ -168,6 +170,7 @@ data Token
   | Atom
   | Eq
   | Null
+  | Reverse
   | Plus
   | Times
   | Divide

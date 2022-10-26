@@ -16,7 +16,7 @@ module Fp.Normalize (
 import Control.Exception (Exception (displayException))
 import Control.Monad.Except (MonadError (throwError))
 import Control.Monad.State (MonadState (get, put))
-import Data.List (foldl', transpose)
+import Data.List (transpose)
 import Data.Map (Map)
 import Data.Text (Text)
 import Data.Void (Void)
@@ -126,13 +126,11 @@ apply (Primitive Divide) (List vs) = case take 2 vs of
 apply (Primitive Transpose) (List vs) =
   let unwrap (List ys) = ys; unwrap _ = []
    in List (List <$> transpose (unwrap <$> vs))
-apply (Combinator1 Insert (Primitive Plus)) (Value.List vs) =
-  foldl'
-    (\acc x -> apply (Primitive Plus) (List [acc, x]))
-    (Value.Atom (Int 0))
-    vs
-apply (Combinator1 ApplyToAll (Primitive Times)) (Value.List vs) =
-  List $ map (apply (Primitive Times)) vs
+apply (Primitive Reverse) (List vs) = List (reverse vs)
+apply (Combinator1 Insert prim@(Primitive _)) (Value.List vs) =
+  foldl1 (\acc x -> apply prim (List [acc, x])) vs
+apply (Combinator1 ApplyToAll prim@(Primitive _)) (Value.List vs) =
+  List $ map (apply prim) vs
 apply (Combinator2 Composition f g) o =
   let o' = apply g o
    in apply f o'
