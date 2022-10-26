@@ -66,6 +66,7 @@ parseToken =
         , Transpose <$ (symbol "transpose" <|> symbol "⍉")
         , Atom <$ symbol "atom"
         , Eq <$ symbol "eq"
+        , Null <$ symbol "null"
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -110,6 +111,7 @@ reserved =
     , "insert"
     , "atom"
     , "eq"
+    , "null"
     , "."
     , "α"
     , "+"
@@ -165,6 +167,7 @@ data Token
   | Insert
   | Atom
   | Eq
+  | Null
   | Plus
   | Times
   | Divide

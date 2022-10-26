@@ -106,6 +106,10 @@ apply (Primitive AtomP) arg = case arg of
 apply (Primitive Eq) (List vs) = case vs of
   [v1, v2] -> Atom (Bool (v1 == v2))
   _ -> Bottom
+apply (Primitive Null) arg = case arg of
+  List xs -> if null xs then Atom (Bool True) else Atom (Bool False)
+  Bottom -> Bottom
+  _ -> Atom (Bool False)
 apply (Primitive Plus) (List vs) = case take 2 vs of
   [Value.Atom (Int x), Atom (Int y)] -> Atom (Int (x + y))
   _ -> Bottom
