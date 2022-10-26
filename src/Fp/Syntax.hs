@@ -1,5 +1,7 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Fp.Syntax (
@@ -12,8 +14,16 @@ module Fp.Syntax (
 ) where
 
 import Data.Bifunctor (Bifunctor (..))
-import Data.Scientific (Scientific)
+import Data.Scientific (Scientific (..))
 import Data.Text (Text)
+import Fp.Pretty (Pretty (..), keyword, label, punctuation)
+import Prettyprinter (Doc)
+import Prettyprinter.Render.Terminal (AnsiStyle)
+
+import Data.String (IsString (..))
+import qualified Data.Text as Text
+import qualified Fp.Pretty as Pretty
+import qualified Prettyprinter as Pretty
 
 -- | The surface syntax of the language
 data Syntax s a
@@ -52,6 +62,13 @@ instance Bifunctor Syntax where
 
   second = fmap
 
+instance IsString (Syntax () a) where
+  fromString string =
+    Variable {location = (), name = fromString string}
+
+instance Pretty a => Pretty (Syntax s a) where
+  pretty = prettyExpression
+
 -- | A scalar value in `fp` language
 data Atom
   = Bool Bool
@@ -60,14 +77,28 @@ data Atom
   | Symbol Text
   deriving stock (Eq, Show)
 
+instance Pretty Atom where
+  pretty (Bool True) = Pretty.scalar "T"
+  pretty (Bool False) = Pretty.scalar "F"
+  pretty (Int n) = Pretty.scalar (pretty n)
+  pretty (Real n) = Pretty.scalar (pretty n)
+  pretty (Symbol name) = Pretty.scalar (prettyTextLiteral name)
+
 data Combinator1
   = ApplyToAll
   | Insert
   deriving stock (Eq, Show)
 
+instance Pretty Combinator1 where
+  pretty ApplyToAll = Pretty.operator "α"
+  pretty Insert = Pretty.operator "/"
+
 data Combinator2
   = Composition
   deriving stock (Eq, Show)
+
+instance Pretty Combinator2 where
+  pretty Composition = Pretty.operator "∘"
 
 data Primitive
   = Transpose
@@ -76,3 +107,169 @@ data Primitive
   | Minus
   | Divide
   deriving stock (Eq, Show)
+
+instance Pretty Primitive where
+  pretty Transpose = Pretty.builtin "⍉"
+  pretty Plus = Pretty.builtin "+"
+  pretty Times = Pretty.builtin "*"
+  pretty Minus = Pretty.builtin "-"
+  pretty Divide = Pretty.builtin "÷"
+
+-- | Pretty-print a @Text@ literal
+prettyTextLiteral :: Text -> Doc AnsiStyle
+prettyTextLiteral text =
+  "\""
+    <> ( pretty
+          . Text.replace "\"" "\\\""
+          . Text.replace "\b" "\\b"
+          . Text.replace "\f" "\\f"
+          . Text.replace "\n" "\\n"
+          . Text.replace "\r" "\\r"
+          . Text.replace "\t" "\\t"
+          . Text.replace "\\" "\\\\"
+       )
+      text
+    <> "\""
+
+prettyExpression :: Pretty a => Syntax s a -> Doc AnsiStyle
+prettyExpression Variable {..} = label (pretty name)
+prettyExpression Primitive {..} = label (pretty primitive)
+prettyExpression Atom {..} = label (pretty atom)
+prettyExpression Bottom {} = label (Pretty.scalar "⊥")
+prettyExpression List {elements = []} =
+  punctuation "<" <> " " <> punctuation ">"
+prettyExpression List {elements = (element : elements)} =
+  Pretty.group (Pretty.flatAlt long short)
+  where
+    short =
+      punctuation "<"
+        <> " "
+        <> prettyExpression element
+        <> foldMap (\e -> punctuation "," <> " " <> prettyExpression e) elements
+        <> " "
+        <> punctuation ">"
+
+    long =
+      Pretty.align
+        ( "< "
+            <> prettyLongElement element
+            <> foldMap (\e -> punctuation "," <> " " <> prettyLongElement e) elements
+            <> ">"
+        )
+    prettyLongElement e = prettyExpression e <> Pretty.hardline
+prettyExpression Combinator1 {..} = prettyCombinator1 c1 argument
+prettyExpression Application {..} = prettyApplication function argument
+prettyExpression Definition {..} = Pretty.group (Pretty.flatAlt long short)
+  where
+    short =
+      keyword "Def"
+        <> " "
+        <> prettyTextLiteral name
+        <> " "
+        <> keyword "≡"
+        <> " "
+        <> prettyExpression body
+
+    long =
+      Pretty.align
+        ( keyword "Def"
+            <> " "
+            <> prettyTextLiteral name
+            <> Pretty.hardline
+            <> Pretty.hardline
+            <> " "
+            <> keyword "≡"
+            <> "  "
+            <> prettyExpression body
+        )
+prettyExpression other = prettyComposition other
+
+prettyCombinator1 :: Pretty a => Combinator1 -> Syntax s a -> Doc AnsiStyle
+prettyCombinator1 c1 argument = Pretty.group (Pretty.flatAlt long short)
+  where
+    short =
+      "("
+        <> pretty c1
+        <> " "
+        <> prettyExpression argument
+        <> ")"
+
+    long =
+      Pretty.align
+        ( "("
+            <> pretty c1
+            <> " "
+            <> Pretty.hardline
+            <> Pretty.hardline
+            <> prettyExpression argument
+            <> ")"
+        )
+
+prettyApplication :: Pretty a => Syntax s a -> Syntax s a -> Doc AnsiStyle
+prettyApplication function argument = Pretty.group (Pretty.flatAlt long short)
+  where
+    short =
+      pretty function
+        <> " "
+        <> Pretty.operator ":"
+        <> " "
+        <> prettyExpression argument
+
+    long =
+      Pretty.align
+        ( pretty function
+            <> " "
+            <> Pretty.hardline
+            <> Pretty.hardline
+            <> Pretty.operator ":"
+            <> " "
+            <> prettyExpression argument
+        )
+
+prettyCombinator2 ::
+  Pretty a =>
+  Combinator2 ->
+  (Syntax s a -> Doc AnsiStyle) ->
+  (Syntax s a -> Doc AnsiStyle)
+prettyCombinator2 operator0 prettyNext expression@Combinator2 {c2 = operator1}
+  | operator0 == operator1 = Pretty.group (Pretty.flatAlt long short)
+  where
+    short = prettyShort expression
+
+    long = Pretty.align (prettyLong expression)
+
+    prettyShort Combinator2 {..}
+      | operator0 == c2 =
+          prettyShort argument1
+            <> " "
+            <> pretty c2
+            <> " "
+            <> prettyNext argument2
+    prettyShort other =
+      prettyNext other
+
+    prettyLong Combinator2 {..}
+      | operator0 == c2 =
+          prettyLong argument1
+            <> Pretty.hardline
+            <> pretty c2
+            <> pretty (Text.replicate spacing " ")
+            <> prettyNext argument2
+    prettyLong other =
+      pretty (Text.replicate indent " ")
+        <> prettyNext other
+
+    operatorWidth = Text.length (Pretty.toText operator0)
+
+    alignment = 2
+
+    align n = ((n `div` alignment) + 1) * alignment
+
+    indent = align operatorWidth
+
+    spacing = indent - operatorWidth
+prettyCombinator2 _ prettyNext other =
+  prettyNext other
+
+prettyComposition :: Pretty a => Syntax s a -> Doc AnsiStyle
+prettyComposition = prettyCombinator2 Composition prettyExpression

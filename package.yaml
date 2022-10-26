@@ -24,6 +24,8 @@ library:
     - Fp.Interpret
     - Fp.Value
     - Fp.REPL
+    - Fp.Width
+    - Fp.Pretty
   dependencies:
     - base
     - megaparsec
@@ -45,6 +47,7 @@ library:
     - haskeline
     - ansi-terminal
     - repline
+    - terminal-size
 
 executable:
   main: Main.hs

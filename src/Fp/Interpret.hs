@@ -19,9 +19,10 @@ import Fp.Input (Input (..))
 import Fp.Value (Value)
 
 import qualified Control.Exception.Safe as Exception
+import qualified Control.Monad.Except as Except
 import qualified Fp.Import as Import
+import qualified Fp.Lexer as Parser
 import qualified Fp.Normalize as Normalize
-import qualified Fp.Parser as Parser
 
 {- | Interpret `fp` source code, return the inferred type and the evaluated
     result
@@ -45,14 +46,18 @@ interpret input = do
     Left interpretError -> throwError interpretError
     Right resolved -> pure resolved
 
-  return $ last (Normalize.evaluate resolved)
+  case Normalize.evaluate resolved of
+    Left message -> Except.throwError (EvaluationError message)
+    Right values -> pure (last values)
 
 -- | Errors related to interpretation of an expression
 data InterpretError
   = ImportError Import.ImportError
   | ParseError Parser.ParseError
+  | EvaluationError Normalize.EvaluationError
   deriving stock (Show)
 
 instance Exception InterpretError where
   displayException (ImportError e) = displayException e
   displayException (ParseError e) = displayException e
+  displayException (EvaluationError e) = displayException e

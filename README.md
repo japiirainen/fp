@@ -62,13 +62,13 @@ Def ip ≡ /+∘α*∘⍉
 ip:<<1,2,3>,<6,5,4>>
 ```
 
-This program lives in `examples/IP.fp` and can be interpreted like this.
+This program lives in `examples/ip.fp` and can be interpreted like this.
 
 ```haskell
-cabal run fp -- interpret examples/IP.fp
+cabal run fp -- interpret examples/ip.fp
 ```
 
-Which will yield `Atom (Int 28)`.
+Which will yield `28`.
 
 ### REPL
 
