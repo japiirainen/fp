@@ -103,6 +103,7 @@ render = \case
   Lexer.ObjectLabel _ -> "a object label"
   Lexer.Transpose -> "transpose"
   Lexer.Atom -> "atom"
+  Lexer.Eq -> "eq"
   Lexer.CloseAngle -> ">"
   Lexer.OpenAngle -> "<"
   Lexer.CloseParen -> ")"
@@ -193,6 +194,9 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Atom
             pure Syntax.Primitive {primitive = Syntax.AtomP, ..}
+          <|> do
+            location <- locatedToken Lexer.Eq
+            pure Syntax.Primitive {primitive = Syntax.Eq, ..}
           <|> do
             location <- locatedToken Lexer.Plus
             pure Syntax.Primitive {primitive = Syntax.Plus, ..}
