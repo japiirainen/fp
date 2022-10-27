@@ -151,12 +151,12 @@ grammar = mdo
             token Lexer.Colon
             argument <- primitiveExpression <|> expression
             pure Syntax.Application {location = Syntax.location function, ..}
-          <|> compExpression
           <|> do
             token Lexer.OpenParen
             e <- expression
             token Lexer.CloseParen
             return e
+          <|> compExpression
       )
 
   let comp token_ c2 subExpression = do
@@ -186,7 +186,9 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.OpenBracket
             optional (token Lexer.Comma)
-            functions <- primitiveExpression `sepBy` token Lexer.Comma
+            functions <-
+              (compExpression <|> primitiveExpression)
+                `sepBy` token Lexer.Comma
             optional (token Lexer.Comma)
             token Lexer.CloseBracket
             pure Syntax.Construction {..}
