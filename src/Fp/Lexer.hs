@@ -98,8 +98,15 @@ parseToken =
     , Dash <$ symbol "-"
     , Colon <$ symbol ":"
     , SemiColon <$ symbol ";"
+    , nth
     , number
     ]
+
+nth :: Parser Token
+nth = try do
+  n <- Lexer.decimal
+  _ <- symbol "n"
+  pure (Nth n)
 
 isLabel0 :: Char -> Bool
 isLabel0 = Char.isAlpha
@@ -200,6 +207,7 @@ data Token
   | SemiColon
   | RealLiteral Scientific
   | Int Int
+  | Nth Int
   | Def
   | Comma
   | Bottom

@@ -50,6 +50,10 @@ matchInt :: Token -> Maybe Int
 matchInt (Lexer.Int n) = Just n
 matchInt _ = Nothing
 
+matchNth :: Token -> Maybe Int
+matchNth (Lexer.Nth n) = Just n
+matchNth _ = Nothing
+
 terminal :: (Token -> Maybe a) -> Parser r a
 terminal match = Earley.terminal match'
   where
@@ -82,6 +86,9 @@ locatedReal = locatedTerminal matchReal
 locatedInt :: Parser r (Offset, Int)
 locatedInt = locatedTerminal matchInt
 
+locatedNth :: Parser r (Offset, Int)
+locatedNth = locatedTerminal matchNth
+
 locatedToken :: Token -> Parser r Offset
 locatedToken expected =
   Earley.terminal capture <?> render expected
@@ -110,6 +117,7 @@ render = \case
   Lexer.Distr -> "distr"
   Lexer.Length -> "length"
   Lexer.Id -> "id"
+  Lexer.Nth n -> Text.pack (show n) <> "n"
   Lexer.CloseAngle -> ">"
   Lexer.OpenAngle -> "<"
   Lexer.CloseParen -> ")"
@@ -240,6 +248,9 @@ grammar = mdo
             location <- locatedToken Lexer.Distl
             pure Syntax.Primitive {primitive = Syntax.Distl, ..}
           <|> do
+            ~(location, n) <- locatedNth
+            pure Syntax.Primitive {primitive = Syntax.Nth n, ..}
+          <|> do
             location <- locatedToken Lexer.Distr
             pure Syntax.Primitive {primitive = Syntax.Distr, ..}
           <|> do
@@ -276,10 +287,6 @@ grammar = mdo
       )
 
   return (many expression)
-
--- >>> parse "" "(eq → +; id):<2,2>"
-
--- >>> parse "" "eq → +; id:<2,2>"
 
 parse ::
   -- | Name of the input (used for error messages)

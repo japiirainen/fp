@@ -98,13 +98,6 @@ evalSingle = \case
     pure $ Construction functions'
   Syntax.Bottom _ -> pure Bottom
 
--- testExpr :: Input
--- testExpr = Code "test" "Def Plus = +\nDef Sum = /Plus\nSum:<1,2,3>"
-
--- >>> evaluate [] <$> Import.resolve testExpr
--- Not in scope: `Import.resolve'
--- No module named `Import' is imported.
-
 {- | This is the function that implements function application,
      evaluating all built-in functions.
 -}
@@ -147,12 +140,14 @@ apply (Primitive Distr) (List vs) = case vs of
 apply (Primitive Length) v = case v of
   List xs -> Atom (Int (length xs))
   _ -> Bottom
+apply (Primitive (Nth n)) (List vs) =
+  if n < length vs then vs !! n else Bottom
 apply (Primitive Id) v = v
 -- combinators
-apply (Combinator1 Insert prim@(Primitive _)) (Value.List vs) =
-  foldl1 (\acc x -> apply prim (List [acc, x])) vs
-apply (Combinator1 ApplyToAll prim@(Primitive _)) (Value.List vs) =
-  List $ map (apply prim) vs
+apply (Combinator1 Insert f) (Value.List vs) =
+  foldl1 (\acc x -> apply f (List [acc, x])) vs
+apply (Combinator1 ApplyToAll f) (Value.List vs) =
+  List $ map (apply f) vs
 apply (Combinator2 Composition f g) o =
   let o' = apply g o
    in apply f o'

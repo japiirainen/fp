@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -124,22 +125,25 @@ data Primitive
   | Distr
   | Length
   | Id
+  | Nth Int
   deriving stock (Eq, Show)
 
 instance Pretty Primitive where
-  pretty Transpose = Pretty.builtin "⍉"
-  pretty Plus = Pretty.builtin "+"
-  pretty Times = Pretty.builtin "*"
-  pretty Minus = Pretty.builtin "-"
-  pretty Divide = Pretty.builtin "÷"
-  pretty AtomP = Pretty.builtin "atom"
-  pretty Eq = Pretty.builtin "eq"
-  pretty Null = Pretty.builtin "null"
-  pretty Reverse = Pretty.builtin "reverse"
-  pretty Distl = Pretty.builtin "distl"
-  pretty Distr = Pretty.builtin "distr"
-  pretty Length = Pretty.builtin "length"
-  pretty Id = Pretty.builtin "id"
+  pretty = \case
+    Transpose -> Pretty.builtin "⍉"
+    Plus -> Pretty.builtin "+"
+    Times -> Pretty.builtin "*"
+    Minus -> Pretty.builtin "-"
+    Divide -> Pretty.builtin "÷"
+    AtomP -> Pretty.builtin "atom"
+    Eq -> Pretty.builtin "eq"
+    Null -> Pretty.builtin "null"
+    Reverse -> Pretty.builtin "reverse"
+    Distl -> Pretty.builtin "distl"
+    Distr -> Pretty.builtin "distr"
+    Length -> Pretty.builtin "length"
+    Id -> Pretty.builtin "id"
+    Nth n -> Pretty.builtin (pretty n)
 
 -- | Pretty-print a @Text@ literal
 prettyTextLiteral :: Text -> Doc AnsiStyle
