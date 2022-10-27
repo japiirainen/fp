@@ -117,16 +117,20 @@ apply (Primitive Null) arg = case arg of
 apply (Primitive Plus) (List vs) = case vs of
   [Value.Atom (Int x), Atom (Int y)] -> Atom (Int (x + y))
   _ -> Bottom
+apply (Primitive Plus) _ = Bottom
 apply (Primitive Times) (List vs) = case vs of
   [Atom (Int x), Atom (Int y)] -> Atom (Int (x * y))
   _ -> Bottom
+apply (Primitive Times) _ = Bottom
 apply (Primitive Minus) (List vs) = case vs of
   [Atom (Int x), Atom (Int y)] -> Atom (Int (x - y))
   _ -> Bottom
+apply (Primitive Minus) _ = Bottom
 apply (Primitive Divide) (List vs) = case vs of
   [Atom (Int x), Atom (Int y)] ->
     (if y == 0 then Bottom else Atom (Int (x `div` y)))
   _ -> Bottom
+apply (Primitive Divide) _ = Bottom
 apply (Primitive Transpose) (List vs) =
   let unwrap (List ys) = ys; unwrap _ = []
    in List (List <$> transpose (unwrap <$> vs))
@@ -159,7 +163,9 @@ apply (If cond ifTrue ifFalse) arg =
     Atom (Bool True) -> apply ifTrue arg
     Atom (Bool False) -> apply ifFalse arg
     _ -> Bottom
-apply v1 v2 = error $ show v1 <> " - " <> show v2 <> " not implemented!"
+apply (Application f x) arg = apply f (apply x arg)
+apply function application =
+  Value.Application function application
 
 -- | Convert a `Value` back into the surface `Syntax`
 quote ::
