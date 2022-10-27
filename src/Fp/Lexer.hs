@@ -103,10 +103,7 @@ parseToken =
     ]
 
 nth :: Parser Token
-nth = try do
-  n <- Lexer.decimal
-  _ <- symbol "n"
-  pure (Nth n)
+nth = try $ Nth <$> (symbol "~" *> Lexer.decimal)
 
 isLabel0 :: Char -> Bool
 isLabel0 = Char.isAlpha
