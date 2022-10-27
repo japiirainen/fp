@@ -32,10 +32,10 @@ instance Semigroup Input where
   Path parent <> Path child = Path (FilePath.takeDirectory parent </> child)
   URI parent <> Path child
     | FilePath.isRelative child
-      , Just uri <- URI.relativeTo childURI parent =
-      URI uri
+    , Just uri <- URI.relativeTo childURI parent =
+        URI uri
     | otherwise =
-      Path child
+        Path child
     where
       uriPath = do
         c : cs <- traverse (URI.mkPathPiece . Text.pack) (FilePath.splitPath child)

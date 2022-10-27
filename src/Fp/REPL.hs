@@ -72,20 +72,20 @@ repl = do
           )
 
   let assign var expr = do
-            let variable = Text.strip (Text.pack var)
+        let variable = Text.strip (Text.pack var)
 
-            let input =
-                  Code
-                    "(input)"
-                    ("Def " <> variable <> " = " <> Text.pack expr)
+        let input =
+              Code
+                "(input)"
+                ("Def " <> variable <> " = " <> Text.pack expr)
 
-            eitherResult <- interpret input
+        eitherResult <- interpret input
 
-            case eitherResult of
-              Left e -> do
-                err e
-              Right (_, bindings) -> do
-                State.modify (bindings <>)
+        case eitherResult of
+          Left e -> do
+            err e
+          Right (_, bindings) -> do
+            State.modify (bindings <>)
 
   let assignment string
         | (var, '=' : expr) <- break (== '=') string = assign var expr

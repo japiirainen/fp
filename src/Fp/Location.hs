@@ -25,16 +25,16 @@ newtype Offset = Offset {getOffset :: Int}
   deriving newtype (Eq, Num, Show)
 
 data Location = Location
-  { -- | The file or name describing where the code came from
-    name :: String
-  , -- | The original source code (the entire file)
-    -- NOTE:
-    -- This will not always be the same for each `Location` because
-    -- different subexpressions might originate from different files if
-    -- they were imported.
-    code :: Text
-  , -- | The offset within the code (in characters).
-    offset :: Offset
+  { name :: String
+  -- ^ The file or name describing where the code came from
+  , code :: Text
+  -- ^ The original source code (the entire file)
+  -- NOTE:
+  -- This will not always be the same for each `Location` because
+  -- different subexpressions might originate from different files if
+  -- they were imported.
+  , offset :: Offset
+  -- ^ The offset within the code (in characters).
   }
   deriving stock (Eq, Show)
 
