@@ -105,7 +105,7 @@ repl = do
         ]
 
   let banner MultiLine = return "... "
-      banner SingleLine = return ">>> "
+      banner SingleLine = return "λ "
 
   let prefix = Just ':'
 

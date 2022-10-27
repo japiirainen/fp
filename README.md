@@ -7,6 +7,7 @@
   - [Command line](#command-line)
   - [Interpret](#interpret)
   - [REPL](#repl)
+- [Documentation](#documentation)
 - [Development](#development)
   - [Nix support](#nix-support)
   - [Tips](#tips)
@@ -72,7 +73,24 @@ Which will yield `28`.
 
 ### REPL
 
-not implemented yet!
+you can enter the `fp` repl to get an interactive environment:
+
+```sh
+fp repl
+```
+
+```haskell
+λ +:<1,2>
+3
+λ :let xs = <1,2,3>
+λ xs
+<1,2,3>
+```
+
+## Documentation
+
+Currently the `examples` directory serves as the documentation! For example
+`examples/mm.fp` is quite interesting.
 
 ## Development
 
