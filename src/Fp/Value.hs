@@ -30,6 +30,7 @@ data Value
   | Atom Atom
   | Bottom
   | Primitive Primitive
+  | If Value Value Value
   | Combinator1 Combinator1 Value
   | Combinator2 Combinator2 Value Value
   deriving stock (Eq, Show)
@@ -47,4 +48,5 @@ shouldShow = \case
   Application _ _ -> False
   Primitive _ -> False
   Combinator1 _ _ -> False
+  If {} -> False
   Combinator2 {} -> False

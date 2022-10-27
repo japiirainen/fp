@@ -118,6 +118,7 @@ render = \case
   Lexer.OpenBracket -> "["
   Lexer.Comma -> ","
   Lexer.Colon -> ":"
+  Lexer.SemiColon -> ";"
   Lexer.Plus -> "+"
   Lexer.Times -> "*"
   Lexer.Divide -> "/"
@@ -126,6 +127,7 @@ render = \case
   Lexer.Int _ -> "an integer"
   Lexer.Def -> "Def"
   Lexer.EmptySeq -> "⌽"
+  Lexer.Arrow -> "→"
 
 grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
@@ -138,11 +140,23 @@ grammar = mdo
           body <- primitiveExpression <|> expression
           pure Syntax.Definition {..}
           <|> do
+            predicate <- primitiveExpression <|> expression
+            token Lexer.Arrow
+            ifTrue <- primitiveExpression <|> expression
+            token Lexer.SemiColon
+            ifFalse <- primitiveExpression <|> expression
+            pure Syntax.If {location = Syntax.location predicate, ..}
+          <|> do
             function <- primitiveExpression <|> expression
             token Lexer.Colon
             argument <- primitiveExpression <|> expression
             pure Syntax.Application {location = Syntax.location function, ..}
           <|> compExpression
+          <|> do
+            token Lexer.OpenParen
+            e <- expression
+            token Lexer.CloseParen
+            return e
       )
 
   let comp token_ c2 subExpression = do
@@ -260,6 +274,10 @@ grammar = mdo
       )
 
   return (many expression)
+
+-- >>> parse "" "(eq → +; id):<2,2>"
+
+-- >>> parse "" "eq → +; id:<2,2>"
 
 parse ::
   -- | Name of the input (used for error messages)

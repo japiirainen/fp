@@ -93,9 +93,11 @@ parseToken =
     , OpenAngle <$ symbol "<"
     , CloseAngle <$ symbol ">"
     , EmptySeq <$ symbol "⌽"
+    , Arrow <$ (symbol "→" <|> symbol "->")
     , Comma <$ symbol ","
     , Dash <$ symbol "-"
     , Colon <$ symbol ":"
+    , SemiColon <$ symbol ";"
     , number
     ]
 
@@ -195,11 +197,13 @@ data Token
   | EmptySeq
   | Dash
   | Colon
+  | SemiColon
   | RealLiteral Scientific
   | Int Int
   | Def
   | Comma
   | Bottom
+  | Arrow
   | T
   | F
   | --  | Object label is a label that consists

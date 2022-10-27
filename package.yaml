@@ -9,6 +9,7 @@ ghc-options:
 
 default-extensions:
   - TypeApplications
+  - OverloadedStrings
 
 library:
   source-dirs: src

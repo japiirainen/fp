@@ -33,6 +33,7 @@ data Syntax s a
   | Bottom {location :: s}
   | Atom {location :: s, atom :: Atom}
   | List {location :: s, elements :: [Syntax s a]}
+  | If {location :: s, predicate :: Syntax s a, ifTrue :: Syntax s a, ifFalse :: Syntax s a}
   | Construction {location :: s, functions :: [Syntax s a]}
   | Combinator1 {location :: s, c1 :: Combinator1, argument :: Syntax s a}
   | Combinator2 {location :: s, argument1 :: Syntax s a, operatorLocation :: s, c2 :: Combinator2, argument2 :: Syntax s a}
@@ -54,6 +55,14 @@ instance Bifunctor Syntax where
     Atom {location = f location, ..}
   first f Bottom {..} =
     Bottom {location = f location, ..}
+  first f If {..} =
+    If
+      { location = f location
+      , predicate = first f predicate
+      , ifTrue = first f ifTrue
+      , ifFalse = first f ifFalse
+      , ..
+      }
   first f Combinator1 {..} =
     Combinator1 {location = f location, argument = first f argument, ..}
   first f Combinator2 {..} =
@@ -218,6 +227,28 @@ prettyExpression Definition {..} = Pretty.group (Pretty.flatAlt long short)
             <> keyword "≡"
             <> "  "
             <> prettyExpression body
+        )
+prettyExpression If {..} =
+  Pretty.group (Pretty.flatAlt long short)
+  where
+    short =
+      prettyExpression predicate
+        <> keyword " → "
+        <> prettyExpression ifTrue
+        <> keyword ";"
+        <> " "
+        <> prettyExpression ifFalse
+
+    long =
+      Pretty.align
+        ( prettyExpression predicate
+            <> Pretty.hardline
+            <> keyword " → "
+            <> prettyExpression ifTrue
+            <> Pretty.hardline
+            <> keyword ":"
+            <> " "
+            <> prettyExpression ifFalse
         )
 prettyExpression other = prettyComposition other
 

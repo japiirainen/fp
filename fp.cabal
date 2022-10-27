@@ -36,7 +36,10 @@ library
 
   other-modules:      Paths_fp
   hs-source-dirs:     src
-  default-extensions: TypeApplications
+  default-extensions:
+    OverloadedStrings
+    TypeApplications
+
   ghc-options:        -Wall
   build-depends:
       ansi-terminal
@@ -67,7 +70,10 @@ executable fp
   main-is:            Main.hs
   other-modules:      Paths_fp
   hs-source-dirs:     app
-  default-extensions: TypeApplications
+  default-extensions:
+    OverloadedStrings
+    TypeApplications
+
   ghc-options:        -Wall
   build-depends:
       base
@@ -80,7 +86,10 @@ test-suite doctest
   main-is:            Main.hs
   other-modules:      Paths_fp
   hs-source-dirs:     doctest
-  default-extensions: TypeApplications
+  default-extensions:
+    OverloadedStrings
+    TypeApplications
+
   ghc-options:        -Wall
   build-depends:
       base
@@ -94,7 +103,10 @@ test-suite tasty
   main-is:            Main.hs
   other-modules:      Paths_fp
   hs-source-dirs:     tasty
-  default-extensions: TypeApplications
+  default-extensions:
+    OverloadedStrings
+    TypeApplications
+
   ghc-options:        -Wall
   build-depends:
       base

@@ -78,22 +78,25 @@ evalSingle = \case
     pure (apply function' argument')
   Syntax.Combinator1 {..} -> do
     argument' <- evalSingle argument
-    pure $ Value.Combinator1 c1 argument'
+    pure $ Combinator1 c1 argument'
   Syntax.Combinator2 {..} -> do
     argument1' <- evalSingle argument1
     argument2' <- evalSingle argument2
-    pure $ Value.Combinator2 c2 argument1' argument2'
-  Syntax.Atom {..} -> pure (Value.Atom atom)
-  Syntax.Primitive {..} -> pure (Value.Primitive primitive)
+    pure $ Combinator2 c2 argument1' argument2'
+  Syntax.If {..} -> do
+    condition <- evalSingle predicate
+    Value.If condition <$> evalSingle ifTrue <*> evalSingle ifFalse
+  Syntax.Atom {..} -> pure (Atom atom)
+  Syntax.Primitive {..} -> pure (Primitive primitive)
   Syntax.List {..} -> do
     elements' <- mapM evalSingle elements
     if any (\case Syntax.Bottom {} -> True; _ -> False) elements
-      then pure Value.Bottom
-      else pure $ Value.List elements'
+      then pure Bottom
+      else pure $ List elements'
   Syntax.Construction {..} -> do
     functions' <- mapM evalSingle functions
-    pure $ Value.Construction functions'
-  Syntax.Bottom _ -> pure Value.Bottom
+    pure $ Construction functions'
+  Syntax.Bottom _ -> pure Bottom
 
 -- testExpr :: Input
 -- testExpr = Code "test" "Def Plus = +\nDef Sum = /Plus\nSum:<1,2,3>"
@@ -155,6 +158,12 @@ apply (Combinator2 Composition f g) o =
    in apply f o'
 -- construction
 apply (Construction fns) arg = List (map (`apply` arg) fns)
+-- condition
+apply (If cond ifTrue ifFalse) arg =
+  case apply cond arg of
+    Atom (Bool True) -> apply ifTrue arg
+    Atom (Bool False) -> apply ifFalse arg
+    _ -> Bottom
 apply v1 v2 = error $ show v1 <> " - " <> show v2 <> " not implemented!"
 
 -- | Convert a `Value` back into the surface `Syntax`
@@ -185,6 +194,13 @@ quote names value =
     Value.Combinator1 c1 argument ->
       Syntax.Combinator1
         { argument = quote names argument
+        , ..
+        }
+    Value.If predicate ifTrue ifFalse ->
+      Syntax.If
+        { predicate = quote names predicate
+        , ifTrue = quote names ifTrue
+        , ifFalse = quote names ifFalse
         , ..
         }
     Value.Combinator2 c2 argument1 argument2 ->
