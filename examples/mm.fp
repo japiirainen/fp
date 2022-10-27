@@ -1,3 +1,6 @@
+{- Implementation of 'matrix multiplication'.
+-}
+
 Def ip ≡ /+∘α*∘⍉
 
 Def mm ≡ α(α ip)∘(α distl)∘distr∘[0n, ⍉∘1n]
