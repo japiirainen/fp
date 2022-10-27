@@ -71,14 +71,13 @@ repl = do
               \    Exit the REPL"
           )
 
-  let assignment string
-        | (var, '=' : expr) <- break (== '=') string = do
+  let assign var expr = do
             let variable = Text.strip (Text.pack var)
 
             let input =
                   Code
                     "(input)"
-                    ("Def " <> variable <> " = " <> (Text.pack expr))
+                    ("Def " <> variable <> " = " <> Text.pack expr)
 
             eitherResult <- interpret input
 
@@ -87,8 +86,11 @@ repl = do
                 err e
               Right (_, bindings) -> do
                 State.modify (bindings <>)
-        | otherwise = do
-            liftIO (putStrLn "usage: let = {expression}")
+
+  let assignment string
+        | (var, '=' : expr) <- break (== '=') string = assign var expr
+        | (var, '≡' : expr) <- break (== '≡') string = assign var expr
+        | otherwise = liftIO (putStrLn "usage: let = {expression}")
 
   let quit _ =
         liftIO (throwIO Interrupt)
@@ -115,7 +117,7 @@ repl = do
         liftIO (putStrLn "Until next time!")
         return Repline.Exit
 
-  let tabComplete = (Word0 (\_ -> pure []))
+  let tabComplete = Word0 (\_ -> pure [])
 
   let action = Repline.evalReplOpts ReplOpts {..}
 

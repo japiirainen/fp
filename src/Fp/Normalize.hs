@@ -87,7 +87,9 @@ evalSingle = \case
   Syntax.Primitive {..} -> pure (Value.Primitive primitive)
   Syntax.List {..} -> do
     elements' <- mapM evalSingle elements
-    pure $ Value.List elements'
+    if any (\case Syntax.Bottom {} -> True; _ -> False) elements
+      then pure Value.Bottom
+      else pure $ Value.List elements'
   Syntax.Construction {..} -> do
     functions' <- mapM evalSingle functions
     pure $ Value.Construction functions'
@@ -151,7 +153,7 @@ apply (Combinator2 Composition f g) o =
   let o' = apply g o
    in apply f o'
 -- construction
-apply (Construction fns) arg = List (map (\f -> apply f arg) fns)
+apply (Construction fns) arg = List (map (`apply` arg) fns)
 apply v1 v2 = error $ show v1 <> " - " <> show v2 <> " not implemented!"
 
 -- | Convert a `Value` back into the surface `Syntax`
