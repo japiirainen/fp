@@ -71,6 +71,7 @@ parseToken =
         , Distl <$ symbol "distl"
         , Distr <$ symbol "distr"
         , Length <$ symbol "length"
+        , Id <$ symbol "id"
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -120,6 +121,7 @@ reserved =
     , "distl"
     , "distr"
     , "length"
+    , "id"
     , "."
     , "α"
     , "+"
@@ -180,6 +182,7 @@ data Token
   | Distr
   | Reverse
   | Length
+  | Id
   | Plus
   | Times
   | Divide

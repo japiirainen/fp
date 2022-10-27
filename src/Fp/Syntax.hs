@@ -114,6 +114,7 @@ data Primitive
   | Distl
   | Distr
   | Length
+  | Id
   deriving stock (Eq, Show)
 
 instance Pretty Primitive where
@@ -129,6 +130,7 @@ instance Pretty Primitive where
   pretty Distl = Pretty.builtin "distl"
   pretty Distr = Pretty.builtin "distr"
   pretty Length = Pretty.builtin "length"
+  pretty Id = Pretty.builtin "id"
 
 -- | Pretty-print a @Text@ literal
 prettyTextLiteral :: Text -> Doc AnsiStyle
@@ -151,8 +153,7 @@ prettyExpression Variable {..} = label (pretty name)
 prettyExpression Primitive {..} = label (pretty primitive)
 prettyExpression Atom {..} = label (pretty atom)
 prettyExpression Bottom {} = label (Pretty.scalar "⊥")
-prettyExpression List {elements = []} =
-  punctuation "<" <> " " <> punctuation ">"
+prettyExpression List {elements = []} = punctuation "⌽"
 prettyExpression List {elements = (element : elements)} =
   Pretty.group (Pretty.flatAlt long short)
   where
