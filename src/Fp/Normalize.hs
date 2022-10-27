@@ -99,6 +99,7 @@ evalSingle = \case
      evaluating all built-in functions.
 -}
 apply :: Value -> Value -> Value
+-- primitives
 apply (Primitive AtomP) arg = case arg of
   Atom _ -> Atom (Bool True)
   Bottom -> Bottom
@@ -127,6 +128,13 @@ apply (Primitive Transpose) (List vs) =
   let unwrap (List ys) = ys; unwrap _ = []
    in List (List <$> transpose (unwrap <$> vs))
 apply (Primitive Reverse) (List vs) = List (reverse vs)
+apply (Primitive Distl) (List vs) = case vs of
+  [a, List xs] -> List $ map (\x -> List [a, x]) xs
+  _ -> Bottom
+apply (Primitive Distr) (List vs) = case vs of
+  [List xs, a] -> List $ map (\x -> List [x, a]) xs
+  _ -> Bottom
+-- combinators
 apply (Combinator1 Insert prim@(Primitive _)) (Value.List vs) =
   foldl1 (\acc x -> apply prim (List [acc, x])) vs
 apply (Combinator1 ApplyToAll prim@(Primitive _)) (Value.List vs) =

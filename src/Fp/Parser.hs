@@ -106,6 +106,8 @@ render = \case
   Lexer.Eq -> "eq"
   Lexer.Null -> "null"
   Lexer.Reverse -> "reverse"
+  Lexer.Distl -> "distl"
+  Lexer.Distr -> "distr"
   Lexer.CloseAngle -> ">"
   Lexer.OpenAngle -> "<"
   Lexer.CloseParen -> ")"
@@ -209,6 +211,12 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Reverse
             pure Syntax.Primitive {primitive = Syntax.Reverse, ..}
+          <|> do
+            location <- locatedToken Lexer.Distl
+            pure Syntax.Primitive {primitive = Syntax.Distl, ..}
+          <|> do
+            location <- locatedToken Lexer.Distr
+            pure Syntax.Primitive {primitive = Syntax.Distr, ..}
           <|> do
             location <- locatedToken Lexer.Plus
             pure Syntax.Primitive {primitive = Syntax.Plus, ..}

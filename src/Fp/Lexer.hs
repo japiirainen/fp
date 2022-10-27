@@ -68,6 +68,8 @@ parseToken =
         , Eq <$ symbol "eq"
         , Null <$ symbol "null"
         , Reverse <$ symbol "reverse"
+        , Distl <$ symbol "distl"
+        , Distr <$ symbol "distr"
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -114,6 +116,8 @@ reserved =
     , "eq"
     , "null"
     , "reverse"
+    , "distl"
+    , "distr"
     , "."
     , "α"
     , "+"
@@ -170,6 +174,8 @@ data Token
   | Atom
   | Eq
   | Null
+  | Distl
+  | Distr
   | Reverse
   | Plus
   | Times
