@@ -22,3 +22,4 @@ cabal.project.local~
 .ghc.environment.*
 website/js/all.min.js
 result
+.history

@@ -48,11 +48,13 @@ lookupVariable ::
 lookupVariable = Map.lookup
 
 evaluate ::
+  -- | Evaluation environment
+  Map Text Value ->
   -- | Surface syntax
   [Syntax Location Input] ->
   -- | result, free of reducible sub-expressions
-  Either EvaluationError [Value]
-evaluate es = State.evalStateT (mapM evalSingle es) mempty
+  Either EvaluationError ([Value], Map Text Value)
+evaluate bindings es = State.runStateT (mapM evalSingle es) bindings
 
 evalSingle ::
   (MonadState (Map Text Value) m, MonadError EvaluationError m) =>

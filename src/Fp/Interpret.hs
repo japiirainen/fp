@@ -7,6 +7,7 @@ module Fp.Interpret (
   -- * Interpret
   Input (..),
   interpret,
+  interpretWith,
 
   -- * Errors related to interpretation
   InterpretError (..),
@@ -15,6 +16,8 @@ module Fp.Interpret (
 import Control.Exception.Safe (Exception (..), Handler (..))
 import Control.Monad.Except (MonadError (..))
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.Map (Map)
+import Data.Text (Text)
 import Fp.Input (Input (..))
 import Fp.Value (Value)
 
@@ -31,8 +34,18 @@ import qualified Fp.Normalize as Normalize
 interpret ::
   (MonadError InterpretError m, MonadIO m) =>
   Input ->
-  m [Value]
-interpret input = do
+  m ([Value], Map Text Value)
+interpret = interpretWith mempty
+
+-- | Like `interpret`, but accepts a custom `Map` of bindings
+interpretWith ::
+  (MonadError InterpretError m, MonadIO m) =>
+  -- | Custom bindings (evaluation environment)
+  Map Text Value ->
+  -- | Input program
+  Input ->
+  m ([Value], Map Text Value)
+interpretWith bindings input = do
   eitherPartiallyResolved <- do
     liftIO
       ( Exception.catches
@@ -46,9 +59,9 @@ interpret input = do
     Left interpretError -> throwError interpretError
     Right resolved -> pure resolved
 
-  case Normalize.evaluate resolved of
+  case Normalize.evaluate bindings resolved of
     Left message -> Except.throwError (EvaluationError message)
-    Right values -> pure values
+    Right res -> pure res
 
 -- | Errors related to interpretation of an expression
 data InterpretError

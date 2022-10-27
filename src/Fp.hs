@@ -130,7 +130,7 @@ main = do
 
       eitherResult <- do
         Except.runExceptT (Interpret.interpret input)
-      values <- throws eitherResult
+      (values, _) <- throws eitherResult
 
       Monad.forM_ values \value -> do
         if Value.shouldShow value
