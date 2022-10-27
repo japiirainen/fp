@@ -134,6 +134,9 @@ apply (Primitive Distl) (List vs) = case vs of
 apply (Primitive Distr) (List vs) = case vs of
   [List xs, a] -> List $ map (\x -> List [x, a]) xs
   _ -> Bottom
+apply (Primitive Length) v = case v of
+  List xs -> Atom (Int (length xs))
+  _ -> Bottom
 -- combinators
 apply (Combinator1 Insert prim@(Primitive _)) (Value.List vs) =
   foldl1 (\acc x -> apply prim (List [acc, x])) vs

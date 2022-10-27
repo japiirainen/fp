@@ -112,6 +112,7 @@ data Primitive
   | Reverse
   | Distl
   | Distr
+  | Length
   deriving stock (Eq, Show)
 
 instance Pretty Primitive where
@@ -126,6 +127,7 @@ instance Pretty Primitive where
   pretty Reverse = Pretty.builtin "reverse"
   pretty Distl = Pretty.builtin "distl"
   pretty Distr = Pretty.builtin "distr"
+  pretty Length = Pretty.builtin "length"
 
 -- | Pretty-print a @Text@ literal
 prettyTextLiteral :: Text -> Doc AnsiStyle
