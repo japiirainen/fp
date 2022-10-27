@@ -62,7 +62,7 @@ parseToken =
     , Combinators.choice
         [ Plus <$ symbol "+"
         , Times <$ symbol "*"
-        , Divide <$ symbol "÷" 
+        , Divide <$ symbol "÷"
         , Transpose <$ (symbol "transpose" <|> symbol "⍉")
         , Atom <$ symbol "atom"
         , Eq <$ symbol "eq"
