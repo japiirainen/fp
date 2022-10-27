@@ -252,21 +252,21 @@ prettyCombinator2 operator0 prettyNext expression@Combinator2 {c2 = operator1}
 
     prettyShort Combinator2 {..}
       | operator0 == c2 =
-          prettyShort argument1
-            <> " "
-            <> pretty c2
-            <> " "
-            <> prettyNext argument2
+        prettyShort argument1
+          <> " "
+          <> pretty c2
+          <> " "
+          <> prettyNext argument2
     prettyShort other =
       prettyNext other
 
     prettyLong Combinator2 {..}
       | operator0 == c2 =
-          prettyLong argument1
-            <> Pretty.hardline
-            <> pretty c2
-            <> pretty (Text.replicate spacing " ")
-            <> prettyNext argument2
+        prettyLong argument1
+          <> Pretty.hardline
+          <> pretty c2
+          <> pretty (Text.replicate spacing " ")
+          <> prettyNext argument2
     prettyLong other =
       pretty (Text.replicate indent " ")
         <> prettyNext other

@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE LambdaCase #-}
 
 {- | This module contains the `Value` type used internally for efficient
     evaluation of expressions
@@ -6,6 +7,9 @@
 module Fp.Value (
   -- * Value
   Value (..),
+
+  -- * Helpers
+  shouldShow,
 ) where
 
 import Data.Text (Text)
@@ -28,3 +32,17 @@ data Value
   | Combinator1 Combinator1 Value
   | Combinator2 Combinator2 Value Value
   deriving stock (Eq, Show)
+
+{- | determines weather or not we should show this
+     `Value` to the user when the program is ran.
+-}
+shouldShow :: Value -> Bool
+shouldShow = \case
+  Variable _ -> True
+  List _ -> True
+  Atom _ -> True
+  Bottom -> True
+  Application _ _ -> False
+  Primitive _ -> False
+  Combinator1 _ _ -> False
+  Combinator2 {} -> False

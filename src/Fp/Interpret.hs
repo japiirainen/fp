@@ -31,7 +31,7 @@ import qualified Fp.Normalize as Normalize
 interpret ::
   (MonadError InterpretError m, MonadIO m) =>
   Input ->
-  m Value
+  m [Value]
 interpret input = do
   eitherPartiallyResolved <- do
     liftIO
@@ -48,7 +48,7 @@ interpret input = do
 
   case Normalize.evaluate resolved of
     Left message -> Except.throwError (EvaluationError message)
-    Right values -> pure (last values)
+    Right values -> pure values
 
 -- | Errors related to interpretation of an expression
 data InterpretError

@@ -17,6 +17,7 @@ import Options.Applicative (Alternative ((<|>)), Parser, ParserInfo)
 import Prettyprinter (Doc)
 import Prettyprinter.Render.Terminal (AnsiStyle)
 
+import qualified Control.Monad as Monad
 import qualified Control.Monad.Except as Except
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text.IO
@@ -24,6 +25,7 @@ import qualified Fp.Interpret as Interpret
 import qualified Fp.Normalize as Normalize
 import qualified Fp.Pretty
 import qualified Fp.REPL as REPL
+import qualified Fp.Value as Value
 import qualified Fp.Width as Width
 import qualified Options.Applicative as Options
 import qualified Prettyprinter as Pretty
@@ -128,12 +130,16 @@ main = do
 
       eitherResult <- do
         Except.runExceptT (Interpret.interpret input)
-      value <- throws eitherResult
+      values <- throws eitherResult
 
-      render <- getRender highlight
+      Monad.forM_ values \value -> do
+        if Value.shouldShow value
+          then do
+            render <- getRender highlight
 
-      let syntax = Normalize.quote [] value
+            let syntax = Normalize.quote [] value
 
-      render (Fp.Pretty.pretty syntax <> Pretty.hardline)
+            render (Fp.Pretty.pretty syntax <> Pretty.hardline)
+          else pure ()
     REPL {} -> do
       REPL.repl

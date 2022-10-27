@@ -90,7 +90,7 @@ parseToken =
     , CloseParen <$ symbol ")"
     , OpenAngle <$ symbol "<"
     , CloseAngle <$ symbol ">"
-    , EmptySeq <$ symbol "⌽" 
+    , EmptySeq <$ symbol "⌽"
     , Comma <$ symbol ","
     , Dash <$ symbol "-"
     , Colon <$ symbol ":"
