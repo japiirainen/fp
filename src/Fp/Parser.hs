@@ -169,6 +169,13 @@ grammar = mdo
           token Lexer.CloseAngle
           pure Syntax.List {..}
           <|> do
+            location <- locatedToken Lexer.OpenBracket
+            optional (token Lexer.Comma)
+            functions <- primitiveExpression `sepBy` token Lexer.Comma
+            optional (token Lexer.Comma)
+            token Lexer.CloseBracket
+            pure Syntax.Construction {..}
+          <|> do
             location <- locatedToken Lexer.EmptySeq
             pure Syntax.List {elements = [], ..}
           <|> do

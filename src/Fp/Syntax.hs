@@ -32,10 +32,9 @@ data Syntax s a
   | Definition {location :: s, name :: Text, body :: Syntax s a}
   | Bottom {location :: s}
   | Atom {location :: s, atom :: Atom}
-  | List
-      {location :: s, elements :: [Syntax s a]}
-  | Combinator1
-      {location :: s, c1 :: Combinator1, argument :: Syntax s a}
+  | List {location :: s, elements :: [Syntax s a]}
+  | Construction {location :: s, functions :: [Syntax s a]}
+  | Combinator1 {location :: s, c1 :: Combinator1, argument :: Syntax s a}
   | Combinator2 {location :: s, argument1 :: Syntax s a, operatorLocation :: s, c2 :: Combinator2, argument2 :: Syntax s a}
   | Primitive {location :: s, primitive :: Primitive}
   deriving stock (Eq, Show, Foldable, Functor, Traversable)
@@ -49,6 +48,8 @@ instance Bifunctor Syntax where
     Definition {location = f location, body = first f body, ..}
   first f List {..} =
     List {location = f location, elements = fmap (first f) elements, ..}
+  first f Construction {..} =
+    Construction {location = f location, functions = fmap (first f) functions, ..}
   first f Atom {..} =
     Atom {location = f location, ..}
   first f Bottom {..} =
@@ -171,6 +172,27 @@ prettyExpression List {elements = (element : elements)} =
             <> ">"
         )
     prettyLongElement e = prettyExpression e <> Pretty.hardline
+prettyExpression Construction {functions = []} =
+  punctuation "[" <> " " <> punctuation "]"
+prettyExpression Construction {functions = (fn : fns)} =
+  Pretty.group (Pretty.flatAlt long short)
+  where
+    short =
+      punctuation "["
+        <> " "
+        <> prettyExpression fn
+        <> foldMap (\e -> punctuation "," <> " " <> prettyExpression e) fns
+        <> " "
+        <> punctuation "]"
+
+    long =
+      Pretty.align
+        ( "[ "
+            <> prettyLongElement fn
+            <> foldMap (\e -> punctuation "," <> " " <> prettyLongElement e) fns
+            <> "]"
+        )
+    prettyLongElement e = prettyExpression e <> Pretty.hardline
 prettyExpression Combinator1 {..} = prettyCombinator1 c1 argument
 prettyExpression Application {..} = prettyApplication function argument
 prettyExpression Definition {..} = Pretty.group (Pretty.flatAlt long short)
@@ -254,21 +276,21 @@ prettyCombinator2 operator0 prettyNext expression@Combinator2 {c2 = operator1}
 
     prettyShort Combinator2 {..}
       | operator0 == c2 =
-        prettyShort argument1
-          <> " "
-          <> pretty c2
-          <> " "
-          <> prettyNext argument2
+          prettyShort argument1
+            <> " "
+            <> pretty c2
+            <> " "
+            <> prettyNext argument2
     prettyShort other =
       prettyNext other
 
     prettyLong Combinator2 {..}
       | operator0 == c2 =
-        prettyLong argument1
-          <> Pretty.hardline
-          <> pretty c2
-          <> pretty (Text.replicate spacing " ")
-          <> prettyNext argument2
+          prettyLong argument1
+            <> Pretty.hardline
+            <> pretty c2
+            <> pretty (Text.replicate spacing " ")
+            <> prettyNext argument2
     prettyLong other =
       pretty (Text.replicate indent " ")
         <> prettyNext other

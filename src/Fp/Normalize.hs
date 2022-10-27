@@ -86,6 +86,9 @@ evalSingle = \case
   Syntax.List {..} -> do
     elements' <- mapM evalSingle elements
     pure $ Value.List elements'
+  Syntax.Construction {..} -> do
+    functions' <- mapM evalSingle functions
+    pure $ Value.Construction functions'
   Syntax.Bottom _ -> pure Value.Bottom
 
 -- testExpr :: Input
@@ -145,6 +148,8 @@ apply (Combinator1 ApplyToAll prim@(Primitive _)) (Value.List vs) =
 apply (Combinator2 Composition f g) o =
   let o' = apply g o
    in apply f o'
+-- construction
+apply (Construction fns) arg = List (map (\f -> apply f arg) fns)
 apply v1 v2 = error $ show v1 <> " - " <> show v2 <> " not implemented!"
 
 -- | Convert a `Value` back into the surface `Syntax`
@@ -168,6 +173,8 @@ quote names value =
         }
     Value.List elements ->
       Syntax.List {elements = fmap (quote names) elements, ..}
+    Value.Construction functions ->
+      Syntax.Construction {functions = fmap (quote names) functions, ..}
     Value.Atom atom ->
       Syntax.Atom {..}
     Value.Combinator1 c1 argument ->

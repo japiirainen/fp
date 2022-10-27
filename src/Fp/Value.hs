@@ -26,6 +26,7 @@ data Value
   = Variable Text
   | Application Value Value
   | List [Value]
+  | Construction [Value]
   | Atom Atom
   | Bottom
   | Primitive Primitive
@@ -42,6 +43,7 @@ shouldShow = \case
   List _ -> True
   Atom _ -> True
   Bottom -> True
+  Construction _ -> False
   Application _ _ -> False
   Primitive _ -> False
   Combinator1 _ _ -> False
