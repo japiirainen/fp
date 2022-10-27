@@ -114,16 +114,16 @@ apply (Primitive Null) arg = case arg of
   List xs -> if null xs then Atom (Bool True) else Atom (Bool False)
   Bottom -> Bottom
   _ -> Atom (Bool False)
-apply (Primitive Plus) (List vs) = case take 2 vs of
+apply (Primitive Plus) (List vs) = case vs of
   [Value.Atom (Int x), Atom (Int y)] -> Atom (Int (x + y))
   _ -> Bottom
-apply (Primitive Times) (List vs) = case take 2 vs of
+apply (Primitive Times) (List vs) = case vs of
   [Atom (Int x), Atom (Int y)] -> Atom (Int (x * y))
   _ -> Bottom
-apply (Primitive Minus) (List vs) = case take 2 vs of
+apply (Primitive Minus) (List vs) = case vs of
   [Atom (Int x), Atom (Int y)] -> Atom (Int (x - y))
   _ -> Bottom
-apply (Primitive Divide) (List vs) = case take 2 vs of
+apply (Primitive Divide) (List vs) = case vs of
   [Atom (Int x), Atom (Int y)] ->
     (if y == 0 then Bottom else Atom (Int (x `div` y)))
   _ -> Bottom
