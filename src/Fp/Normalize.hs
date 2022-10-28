@@ -162,6 +162,8 @@ apply (Primitive Not) arg = case arg of
   Atom (Bool x) -> Atom (Bool (not x))
   Bottom -> Bottom
   _ -> Bottom
+apply (Primitive IntoSeq) Bottom = Bottom
+apply (Primitive IntoSeq) arg = List [arg]
 -- combinators
 apply (Combinator1 Insert f) (Value.List vs) =
   foldl1 (\acc x -> apply f (List [acc, x])) vs

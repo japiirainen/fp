@@ -148,6 +148,7 @@ render = \case
   Lexer.And -> "∧"
   Lexer.Not -> "¬"
   Lexer.Or -> "∨"
+  Lexer.AtSign -> "@"
 
 grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
@@ -295,6 +296,11 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Or
             pure Syntax.Primitive {primitive = Syntax.Or, ..}
+          <|> do
+            location <- locatedToken Lexer.AtSign
+            token Lexer.OpenAngle
+            token Lexer.CloseAngle
+            pure Syntax.Primitive {primitive = Syntax.IntoSeq, ..}
           <|> do
             location <- locatedToken Lexer.Insert
             argument <- primitiveExpression

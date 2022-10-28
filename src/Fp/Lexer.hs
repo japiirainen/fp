@@ -102,6 +102,7 @@ parseToken =
     , UnderScore <$ symbol "_"
     , Colon <$ symbol ":"
     , SemiColon <$ symbol ";"
+    , AtSign <$ symbol "@"
     , nth
     , nthBack
     , number
@@ -225,6 +226,7 @@ data Token
   | Comma
   | Bottom
   | Arrow
+  | AtSign
   | T
   | F
   | --  | Object label is a label that consists

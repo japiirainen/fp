@@ -130,6 +130,7 @@ data Primitive
   | Not
   | And
   | Or
+  | IntoSeq
   | Nth Int
   | NthBack Int
   deriving stock (Eq, Show)
@@ -154,6 +155,7 @@ instance Pretty Primitive where
     Not -> Pretty.builtin "¬"
     And -> Pretty.builtin "∧"
     Or -> Pretty.builtin "∨"
+    IntoSeq -> Pretty.builtin "@<>"
 
 prettyExpression :: Pretty a => Syntax s a -> Doc AnsiStyle
 prettyExpression Variable {..} = label (pretty name)
