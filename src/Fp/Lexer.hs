@@ -103,11 +103,15 @@ parseToken =
     , Colon <$ symbol ":"
     , SemiColon <$ symbol ";"
     , nth
+    , nthBack
     , number
     ]
 
 nth :: Parser Token
 nth = (try . lexeme) $ Nth <$> (symbol "~" *> Lexer.decimal)
+
+nthBack :: Parser Token
+nthBack = (try . lexeme) $ NthBack <$> (Lexer.decimal <* symbol "~")
 
 isLabel0 :: Char -> Bool
 isLabel0 = Char.isAlpha
@@ -216,6 +220,7 @@ data Token
   | RealLiteral Scientific
   | Int Int
   | Nth Int
+  | NthBack Int
   | Def
   | Comma
   | Bottom

@@ -7,9 +7,12 @@
                ⊥;
 -}
 
-Def eq0 ≡ eq ∘ [ id, ~0 ]
+Def eq0 ≡ eq ∘ [ id, _0 ]
+Def sub1 ≡ - ∘ [ id, _1 ]
 
-Def iota ≡ _2 ∘ while (¬ ∘ eq0 ∘ _1) [ sub1 ∘ _1, apndl ] ∘ [ id, ~<> ]
+-- Def iiota = 2s o while (not o eq0 o 1s) [ sub1 o 1s, apndl ] o [ id, ~<> ]
+
+Def iota ≡ _1 ∘ while (¬ ∘ eq0 ∘ _0) [ sub1 ∘ _0, apndl ] ∘ [ id, ~<> ]
 
 iota:10
 

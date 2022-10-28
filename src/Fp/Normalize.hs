@@ -146,6 +146,9 @@ apply (Primitive Length) v = case v of
   _ -> Bottom
 apply (Primitive (Nth n)) (List vs) =
   if n < length vs then vs !! n else Bottom
+apply (Primitive (NthBack n)) (List vs) =
+  let len = length vs in
+  if n < len then vs !! ((len - 1) - n) else Bottom
 apply (Primitive Id) v = v
 apply (Primitive And) (List vs) = case vs of
   [Atom (Bool x), Atom (Bool y)] -> Atom (Bool (x && y))

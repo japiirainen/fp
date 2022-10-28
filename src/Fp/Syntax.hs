@@ -131,6 +131,7 @@ data Primitive
   | And
   | Or
   | Nth Int
+  | NthBack Int
   deriving stock (Eq, Show)
 
 instance Pretty Primitive where
@@ -148,7 +149,8 @@ instance Pretty Primitive where
     Distr -> Pretty.builtin "distr"
     Length -> Pretty.builtin "length"
     Id -> Pretty.builtin "id"
-    Nth n -> Pretty.builtin (pretty n)
+    Nth n -> Pretty.builtin "~" <> pretty n
+    NthBack n -> Pretty.builtin (pretty n) <> "~"
     Not -> Pretty.builtin "¬"
     And -> Pretty.builtin "∧"
     Or -> Pretty.builtin "∨"

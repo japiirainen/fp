@@ -54,6 +54,10 @@ matchNth :: Token -> Maybe Int
 matchNth (Lexer.Nth n) = Just n
 matchNth _ = Nothing
 
+matchNthBack :: Token -> Maybe Int
+matchNthBack (Lexer.NthBack n) = Just n
+matchNthBack _ = Nothing
+
 terminal :: (Token -> Maybe a) -> Parser r a
 terminal match = Earley.terminal match'
   where
@@ -89,6 +93,9 @@ locatedInt = locatedTerminal matchInt
 locatedNth :: Parser r (Offset, Int)
 locatedNth = locatedTerminal matchNth
 
+locatedNthBack :: Parser r (Offset, Int)
+locatedNthBack = locatedTerminal matchNthBack
+
 locatedToken :: Token -> Parser r Offset
 locatedToken expected =
   Earley.terminal capture <?> render expected
@@ -117,7 +124,8 @@ render = \case
   Lexer.Distr -> "distr"
   Lexer.Length -> "length"
   Lexer.Id -> "id"
-  Lexer.Nth n -> Text.pack (show n) <> "n"
+  Lexer.NthBack n -> Text.pack (show n) <> "~"
+  Lexer.Nth n -> "~" <> Text.pack (show n)
   Lexer.CloseAngle -> ">"
   Lexer.OpenAngle -> "<"
   Lexer.CloseParen -> ")"
@@ -254,6 +262,9 @@ grammar = mdo
           <|> do
             ~(location, n) <- locatedNth
             pure Syntax.Primitive {primitive = Syntax.Nth n, ..}
+          <|> do
+            ~(location, n) <- locatedNthBack
+            pure Syntax.Primitive {primitive = Syntax.NthBack n, ..}
           <|> do
             location <- locatedToken Lexer.Distr
             pure Syntax.Primitive {primitive = Syntax.Distr, ..}
