@@ -147,6 +147,18 @@ apply (Primitive Length) v = case v of
 apply (Primitive (Nth n)) (List vs) =
   if n < length vs then vs !! n else Bottom
 apply (Primitive Id) v = v
+apply (Primitive And) (List vs) = case vs of
+  [Atom (Bool x), Atom (Bool y)] -> Atom (Bool (x && y))
+  _ -> Bottom
+apply (Primitive And) _ = Bottom
+apply (Primitive Or) (List vs) = case vs of
+  [Atom (Bool x), Atom (Bool y)] -> Atom (Bool (x || y))
+  _ -> Bottom
+apply (Primitive Or) _ = Bottom
+apply (Primitive Not) arg = case arg of
+  Atom (Bool x) -> Atom (Bool (not x))
+  Bottom -> Bottom
+  _ -> Bottom
 -- combinators
 apply (Combinator1 Insert f) (Value.List vs) =
   foldl1 (\acc x -> apply f (List [acc, x])) vs

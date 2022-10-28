@@ -137,6 +137,9 @@ render = \case
   Lexer.Def -> "Def"
   Lexer.EmptySeq -> "⌽"
   Lexer.Arrow -> "→"
+  Lexer.And -> "∧"
+  Lexer.Not -> "¬"
+  Lexer.Or -> "∨"
 
 grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
@@ -272,6 +275,15 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Divide
             pure Syntax.Primitive {primitive = Syntax.Divide, ..}
+          <|> do
+            location <- locatedToken Lexer.Not
+            pure Syntax.Primitive {primitive = Syntax.Not, ..}
+          <|> do
+            location <- locatedToken Lexer.And
+            pure Syntax.Primitive {primitive = Syntax.And, ..}
+          <|> do
+            location <- locatedToken Lexer.Or
+            pure Syntax.Primitive {primitive = Syntax.Or, ..}
           <|> do
             location <- locatedToken Lexer.Insert
             argument <- primitiveExpression

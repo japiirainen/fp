@@ -72,6 +72,9 @@ parseToken =
         , Distr <$ symbol "distr"
         , Length <$ symbol "length"
         , Id <$ symbol "id"
+        , Not <$ (symbol "not" <|> symbol "¬")
+        , And <$ (symbol "and" <|> symbol "∧")
+        , Or <$ (symbol "or" <|> symbol "∨")
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -104,7 +107,7 @@ parseToken =
     ]
 
 nth :: Parser Token
-nth = try $ Nth <$> (symbol "~" *> Lexer.decimal)
+nth = (try . lexeme) $ Nth <$> (symbol "~" *> Lexer.decimal)
 
 isLabel0 :: Char -> Bool
 isLabel0 = Char.isAlpha
@@ -129,6 +132,9 @@ reserved =
     , "distr"
     , "length"
     , "id"
+    , "and"
+    , "or"
+    , "not"
     , "."
     , "α"
     , "+"
@@ -193,6 +199,9 @@ data Token
   | Plus
   | Times
   | Divide
+  | Not
+  | And
+  | Or
   | OpenBracket
   | CloseBracket
   | OpenParen

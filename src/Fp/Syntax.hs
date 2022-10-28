@@ -127,6 +127,9 @@ data Primitive
   | Distr
   | Length
   | Id
+  | Not
+  | And
+  | Or
   | Nth Int
   deriving stock (Eq, Show)
 
@@ -146,6 +149,9 @@ instance Pretty Primitive where
     Length -> Pretty.builtin "length"
     Id -> Pretty.builtin "id"
     Nth n -> Pretty.builtin (pretty n)
+    Not -> Pretty.builtin "¬"
+    And -> Pretty.builtin "∧"
+    Or -> Pretty.builtin "∨"
 
 prettyExpression :: Pretty a => Syntax s a -> Doc AnsiStyle
 prettyExpression Variable {..} = label (pretty name)
