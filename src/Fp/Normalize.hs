@@ -164,6 +164,14 @@ apply (Primitive Not) arg = case arg of
   _ -> Bottom
 apply (Primitive IntoSeq) Bottom = Bottom
 apply (Primitive IntoSeq) arg = List [arg]
+apply (Primitive AppendLeft) (List vs) = case vs of
+  [y, List xs] -> List (y : xs)
+  _ -> Bottom
+apply (Primitive AppendLeft) _ = Bottom
+apply (Primitive AppendRight) (List vs) = case vs of
+  [List xs, y] -> List (xs <> pure y)
+  _ -> Bottom
+apply (Primitive AppendRight) _ = Bottom
 -- combinators
 apply (Combinator1 Insert f) (Value.List vs) =
   foldl1 (\acc x -> apply f (List [acc, x])) vs

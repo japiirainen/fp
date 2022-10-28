@@ -149,6 +149,8 @@ render = \case
   Lexer.Not -> "¬"
   Lexer.Or -> "∨"
   Lexer.AtSign -> "@"
+  Lexer.AppendLeft -> "apndl"
+  Lexer.AppendRight -> "apndr"
 
 grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
@@ -296,6 +298,12 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Or
             pure Syntax.Primitive {primitive = Syntax.Or, ..}
+          <|> do
+            location <- locatedToken Lexer.AppendLeft
+            pure Syntax.Primitive {primitive = Syntax.AppendLeft, ..}
+          <|> do
+            location <- locatedToken Lexer.AppendRight
+            pure Syntax.Primitive {primitive = Syntax.AppendRight, ..}
           <|> do
             location <- locatedToken Lexer.AtSign
             token Lexer.OpenAngle

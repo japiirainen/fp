@@ -75,6 +75,8 @@ parseToken =
         , Not <$ (symbol "not" <|> symbol "¬")
         , And <$ (symbol "and" <|> symbol "∧")
         , Or <$ (symbol "or" <|> symbol "∨")
+        , AppendLeft <$ symbol "apndl"
+        , AppendRight <$ symbol "apndr"
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -140,6 +142,8 @@ reserved =
     , "and"
     , "or"
     , "not"
+    , "apndl"
+    , "apndr"
     , "."
     , "α"
     , "+"
@@ -207,6 +211,8 @@ data Token
   | Not
   | And
   | Or
+  | AppendLeft
+  | AppendRight
   | OpenBracket
   | CloseBracket
   | OpenParen
