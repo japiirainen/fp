@@ -147,22 +147,6 @@ instance Pretty Primitive where
     Id -> Pretty.builtin "id"
     Nth n -> Pretty.builtin (pretty n)
 
--- | Pretty-print a @Text@ literal
-prettyTextLiteral :: Text -> Doc AnsiStyle
-prettyTextLiteral text =
-  "\""
-    <> ( pretty
-          . Text.replace "\"" "\\\""
-          . Text.replace "\b" "\\b"
-          . Text.replace "\f" "\\f"
-          . Text.replace "\n" "\\n"
-          . Text.replace "\r" "\\r"
-          . Text.replace "\t" "\\t"
-          . Text.replace "\\" "\\\\"
-       )
-      text
-    <> "\""
-
 prettyExpression :: Pretty a => Syntax s a -> Doc AnsiStyle
 prettyExpression Variable {..} = label (pretty name)
 prettyExpression Primitive {..} = label (pretty primitive)
@@ -216,7 +200,7 @@ prettyExpression Definition {..} = Pretty.group (Pretty.flatAlt long short)
     short =
       keyword "Def"
         <> " "
-        <> prettyTextLiteral name
+        <> pretty name
         <> " "
         <> keyword "≡"
         <> " "
@@ -226,7 +210,7 @@ prettyExpression Definition {..} = Pretty.group (Pretty.flatAlt long short)
       Pretty.align
         ( keyword "Def"
             <> " "
-            <> prettyTextLiteral name
+            <> pretty name
             <> Pretty.hardline
             <> Pretty.hardline
             <> " "
