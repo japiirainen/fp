@@ -93,16 +93,18 @@ instance Pretty Atom where
   pretty (Bool False) = Pretty.scalar "F"
   pretty (Int n) = Pretty.scalar (pretty n)
   pretty (Real n) = Pretty.scalar (pretty n)
-  pretty (Symbol name) = Pretty.scalar (prettyTextLiteral name)
+  pretty (Symbol name) = Pretty.scalar (pretty name)
 
 data Combinator1
   = ApplyToAll
   | Insert
+  | Const
   deriving stock (Eq, Show)
 
 instance Pretty Combinator1 where
   pretty ApplyToAll = Pretty.operator "α"
   pretty Insert = Pretty.operator "/"
+  pretty Const = Pretty.operator "_"
 
 data Combinator2
   = Composition

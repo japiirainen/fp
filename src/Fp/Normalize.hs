@@ -23,7 +23,7 @@ import Data.Void (Void)
 import Fp.Input (Input)
 import Fp.Location (Location)
 import Fp.Pretty (Pretty)
-import Fp.Syntax (Atom (..), Combinator1 (ApplyToAll, Insert), Combinator2 (Composition), Primitive (..), Syntax)
+import Fp.Syntax (Atom (..), Combinator1 (..), Combinator2 (..), Primitive (..), Syntax)
 import Fp.Value (Value (..))
 import Prelude hiding (succ)
 
@@ -152,6 +152,8 @@ apply (Combinator1 Insert f) (Value.List vs) =
   foldl1 (\acc x -> apply f (List [acc, x])) vs
 apply (Combinator1 ApplyToAll f) (Value.List vs) =
   List $ map (apply f) vs
+apply (Combinator1 Const (Atom a)) _ = Atom a
+apply (Combinator1 Const _) _ = Bottom
 apply (Combinator2 Composition f g) o =
   let o' = apply g o
    in apply f o'

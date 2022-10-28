@@ -131,6 +131,7 @@ render = \case
   Lexer.Times -> "*"
   Lexer.Divide -> "/"
   Lexer.Dash -> "-"
+  Lexer.UnderScore -> "_"
   Lexer.RealLiteral _ -> "a real literal"
   Lexer.Int _ -> "an integer"
   Lexer.Def -> "Def"
@@ -279,6 +280,10 @@ grammar = mdo
             location <- locatedToken Lexer.ApplyToAll
             argument <- primitiveExpression
             pure Syntax.Combinator1 {c1 = Syntax.ApplyToAll, ..}
+          <|> do
+            location <- locatedToken Lexer.UnderScore
+            argument <- primitiveExpression
+            pure Syntax.Combinator1 {c1 = Syntax.Const, ..}
           <|> do
             token Lexer.OpenParen
             e <- primitiveExpression

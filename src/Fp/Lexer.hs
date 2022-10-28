@@ -25,7 +25,7 @@ import Data.Text (Text)
 import Data.Void (Void)
 import Fp.Location (Location (..), Offset (..))
 import Text.Megaparsec (ParseErrorBundle (..), try, (<?>))
-import Prelude hiding (lex)
+import Prelude hiding (lex, const)
 
 import qualified Control.Monad as Monad
 import qualified Control.Monad.Combinators as Combinators
@@ -96,6 +96,7 @@ parseToken =
     , Arrow <$ (symbol "→" <|> symbol "->")
     , Comma <$ symbol ","
     , Dash <$ symbol "-"
+    , UnderScore <$ symbol "_"
     , Colon <$ symbol ":"
     , SemiColon <$ symbol ";"
     , nth
@@ -109,7 +110,7 @@ isLabel0 :: Char -> Bool
 isLabel0 = Char.isAlpha
 
 isLabel :: Char -> Bool
-isLabel c = Char.isAlphaNum c || c == '_' || c == '-' || c == '/'
+isLabel c = Char.isAlphaNum c || c == '-' || c == '/'
 
 reserved :: HashSet Text
 reserved =
@@ -200,6 +201,7 @@ data Token
   | CloseAngle
   | EmptySeq
   | Dash
+  | UnderScore
   | Colon
   | SemiColon
   | RealLiteral Scientific
