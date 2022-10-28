@@ -96,8 +96,35 @@ important topics below for reference.
 `Fp` has a condition expression. It is similar to ternary operator in many
 ordinary languages.
 
+- [While](./examples/while.fp)
+`while` provides a way to run a specific program many times, specifically
+untile some condition is met.
+
 - [Matrix multiplication](./examples/mm.fp)
 This examples shows how to do matrix multiplication in `fp`.
+
+- [Facrorials](./examples/fact.fp)
+A way to compute factorial's in `fp`.
+
+Here's a bunch of primitive functions.
+
+- [boolean algebra](./examples/and-or-not.fp)
+- [append](./examples/append.fp)
+- [applyToAll](./examples/applyToAll.fp)
+- [atom](./examples/atom.fp)
+- [const](./examples/const.fp)
+- [construction](./examples/construction.fp)
+- [dist](./examples/dist.fp)
+- [eq](./examples/eq.fp)
+- [id](./examples/id.fp)
+- [length](./examples/length.fp)
+- [nth](./examples/nth.fp)
+- [null](./examples/null.fp)
+- [reverse](./examples/reverse.fp)
+- [transpose](./examples/transpose.fp)
+
+- [Unbound variable error](./examples/fact.fp)
+`Fp` also has nice error messages.
 
 ## Development
 
