@@ -89,8 +89,15 @@ fp repl
 
 ## Documentation
 
-Currently the `examples` directory serves as the documentation! For example
-`examples/mm.fp` is quite interesting.
+Currently the `examples` directory serves as the documentation! I will list some
+important topics below for reference.
+
+- [Conditionals](./examples/condition.fp)
+`Fp` has a condition expression. It is similar to ternary operator in many
+ordinary languages.
+
+- [Matrix multiplication](./examples/mm.fp)
+This examples shows how to do matrix multiplication in `fp`.
 
 ## Development
 
