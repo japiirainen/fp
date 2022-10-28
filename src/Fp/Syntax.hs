@@ -108,10 +108,12 @@ instance Pretty Combinator1 where
 
 data Combinator2
   = Composition
+  | While
   deriving stock (Eq, Show)
 
 instance Pretty Combinator2 where
   pretty Composition = Pretty.operator "∘"
+  pretty While = Pretty.operator "while"
 
 data Primitive
   = Transpose
@@ -133,6 +135,8 @@ data Primitive
   | IntoSeq
   | AppendLeft
   | AppendRight
+  | Flatten
+  | Tail
   | Nth Int
   | NthBack Int
   deriving stock (Eq, Show)
@@ -160,6 +164,8 @@ instance Pretty Primitive where
     IntoSeq -> Pretty.builtin "@<>"
     AppendLeft -> Pretty.builtin "apndl"
     AppendRight -> Pretty.builtin "apndr"
+    Flatten -> Pretty.builtin "flatten"
+    Tail -> Pretty.builtin "tail"
 
 prettyExpression :: Pretty a => Syntax s a -> Doc AnsiStyle
 prettyExpression Variable {..} = label (pretty name)
@@ -344,4 +350,7 @@ prettyCombinator2 _ prettyNext other =
   prettyNext other
 
 prettyComposition :: Pretty a => Syntax s a -> Doc AnsiStyle
-prettyComposition = prettyCombinator2 Composition prettyExpression
+prettyComposition = prettyCombinator2 Composition prettyWhile
+
+prettyWhile :: Pretty a => Syntax s a -> Doc AnsiStyle
+prettyWhile = prettyCombinator2 While prettyExpression

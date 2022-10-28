@@ -146,9 +146,11 @@ apply (Primitive Length) v = case v of
   _ -> Bottom
 apply (Primitive (Nth n)) (List vs) =
   if n < length vs then vs !! n else Bottom
+apply (Primitive (Nth _)) _ = Bottom
 apply (Primitive (NthBack n)) (List vs) =
   let len = length vs in
   if n < len then vs !! ((len - 1) - n) else Bottom
+apply (Primitive (NthBack _)) _ = Bottom
 apply (Primitive Id) v = v
 apply (Primitive And) (List vs) = case vs of
   [Atom (Bool x), Atom (Bool y)] -> Atom (Bool (x && y))
@@ -172,16 +174,36 @@ apply (Primitive AppendRight) (List vs) = case vs of
   [List xs, y] -> List (xs <> pure y)
   _ -> Bottom
 apply (Primitive AppendRight) _ = Bottom
+apply (Primitive Flatten) (List vs) = flatten vs
+  where
+    flatten :: [Value] -> Value
+    flatten = \case
+      [] -> List []
+      List xs : ys -> flatten (xs <> ys)
+      x : ys -> case flatten ys of
+        List xs -> List (x : xs)
+        _ -> Bottom
+apply (Primitive Flatten) _ = Bottom
+apply (Primitive Tail) (List vs) =
+  if length vs > 1 then List (tail vs) else Bottom
+apply (Primitive Tail) _ = Bottom
 -- combinators
 apply (Combinator1 Insert f) (Value.List vs) =
   foldl1 (\acc x -> apply f (List [acc, x])) vs
 apply (Combinator1 ApplyToAll f) (Value.List vs) =
   List $ map (apply f) vs
 apply (Combinator1 Const (Atom a)) _ = Atom a
+apply (Combinator1 Const (List xs)) _ = List xs
 apply (Combinator1 Const _) _ = Bottom
 apply (Combinator2 Composition f g) o =
   let o' = apply g o
    in apply f o'
+apply while@(Combinator2 While predicate f) o =
+  let cond = apply predicate o
+   in case cond of
+        Atom (Bool True) -> apply while (apply f o)
+        Atom (Bool False) -> o
+        _ -> Bottom
 -- construction
 apply (Construction fns) arg = List (map (`apply` arg) fns)
 -- condition

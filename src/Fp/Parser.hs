@@ -117,12 +117,15 @@ render = \case
   Lexer.ObjectLabel _ -> "a object label"
   Lexer.Transpose -> "transpose"
   Lexer.Atom -> "atom"
+  Lexer.Tail -> "tail"
   Lexer.Eq -> "eq"
   Lexer.Null -> "null"
   Lexer.Reverse -> "reverse"
   Lexer.Distl -> "distl"
   Lexer.Distr -> "distr"
   Lexer.Length -> "length"
+  Lexer.While -> "while"
+  Lexer.Flatten -> "flatten"
   Lexer.Id -> "id"
   Lexer.NthBack n -> Text.pack (show n) <> "~"
   Lexer.Nth n -> "~" <> Text.pack (show n)
@@ -174,12 +177,12 @@ grammar = mdo
             token Lexer.Colon
             argument <- primitiveExpression <|> expression
             pure Syntax.Application {location = Syntax.location function, ..}
+          <|> compExpression
           <|> do
             token Lexer.OpenParen
-            e <- expression
+            e <- expression <|> primitiveExpression
             token Lexer.CloseParen
             return e
-          <|> compExpression
       )
 
   let comp token_ c2 subExpression = do
@@ -305,6 +308,12 @@ grammar = mdo
             location <- locatedToken Lexer.AppendRight
             pure Syntax.Primitive {primitive = Syntax.AppendRight, ..}
           <|> do
+            location <- locatedToken Lexer.Flatten
+            pure Syntax.Primitive {primitive = Syntax.Flatten, ..}
+          <|> do
+            location <- locatedToken Lexer.Tail
+            pure Syntax.Primitive {primitive = Syntax.Tail, ..}
+          <|> do
             location <- locatedToken Lexer.AtSign
             token Lexer.OpenAngle
             token Lexer.CloseAngle
@@ -321,6 +330,16 @@ grammar = mdo
             location <- locatedToken Lexer.UnderScore
             argument <- primitiveExpression
             pure Syntax.Combinator1 {c1 = Syntax.Const, ..}
+          <|> do
+            location <- locatedToken Lexer.While
+            argument1 <- expression
+            argument2 <- expression
+            pure
+              Syntax.Combinator2
+                { c2 = Syntax.While
+                , operatorLocation = Syntax.location argument1
+                , ..
+                }
           <|> do
             token Lexer.OpenParen
             e <- primitiveExpression

@@ -77,12 +77,15 @@ parseToken =
         , Or <$ (symbol "or" <|> symbol "∨")
         , AppendLeft <$ symbol "apndl"
         , AppendRight <$ symbol "apndr"
+        , Flatten <$ symbol "flatten"
+        , Tail <$ (symbol "tail" <|> symbol "tl")
         ]
         <?> "primitive function"
     , Combinators.choice
         [ Comp <$ (symbol "." <|> symbol "∘")
         , ApplyToAll <$ (symbol "applyToAll" <|> symbol "α")
         , Insert <$ (symbol "insert" <|> symbol "/")
+        , While <$ symbol "while"
         ]
         <?> "functional form"
     , Combinators.choice
@@ -144,6 +147,10 @@ reserved =
     , "not"
     , "apndl"
     , "apndr"
+    , "while"
+    , "flatten"
+    , "tl"
+    , "tail"
     , "."
     , "α"
     , "+"
@@ -213,6 +220,9 @@ data Token
   | Or
   | AppendLeft
   | AppendRight
+  | While
+  | Flatten
+  | Tail
   | OpenBracket
   | CloseBracket
   | OpenParen
