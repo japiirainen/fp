@@ -25,7 +25,7 @@ import Data.Text (Text)
 import Data.Void (Void)
 import Fp.Location (Location (..), Offset (..))
 import Text.Megaparsec (ParseErrorBundle (..), try, (<?>))
-import Prelude hiding (lex, const)
+import Prelude hiding (const, lex)
 
 import qualified Control.Monad as Monad
 import qualified Control.Monad.Combinators as Combinators

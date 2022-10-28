@@ -15,7 +15,7 @@ module Fp.Normalize (
 
 import Control.Exception (Exception (displayException))
 import Control.Monad.Except (MonadError (throwError))
-import Control.Monad.State (MonadState (get, put))
+import Control.Monad.State (MonadState)
 import Data.List (transpose)
 import Data.Map (Map)
 import Data.Text (Text)
@@ -61,17 +61,14 @@ evalSingle ::
   Syntax Location Input ->
   m Value
 evalSingle = \case
-  Syntax.Variable {..} -> do
-    env <- get
-    case lookupVariable name env of
-      Just value ->
-        pure value
+  Syntax.Variable {..} ->
+    State.gets (lookupVariable name) >>= \case
+      Just value -> pure value
       Nothing -> throwError (UnboundVariable location name)
   Syntax.Definition {..} -> do
     v <- evalSingle body
-    env <- get
-    put $ Map.insert name v env
-    evalSingle body
+    State.modify (Map.insert name v)
+    pure v
   Syntax.Application {..} -> do
     function' <- evalSingle function
     argument' <- evalSingle argument
@@ -148,8 +145,8 @@ apply (Primitive (Nth n)) (List vs) =
   if n < length vs then vs !! n else Bottom
 apply (Primitive (Nth _)) _ = Bottom
 apply (Primitive (NthBack n)) (List vs) =
-  let len = length vs in
-  if n < len then vs !! ((len - 1) - n) else Bottom
+  let len = length vs
+   in if n < len then vs !! ((len - 1) - n) else Bottom
 apply (Primitive (NthBack _)) _ = Bottom
 apply (Primitive Id) v = v
 apply (Primitive And) (List vs) = case vs of
