@@ -86,6 +86,7 @@ parseToken =
         , ApplyToAll <$ (symbol "applyToAll" <|> symbol "α")
         , Insert <$ (symbol "insert" <|> symbol "/")
         , While <$ symbol "while"
+        , Bu <$ symbol "bu"
         ]
         <?> "functional form"
     , Combinators.choice
@@ -151,6 +152,7 @@ reserved =
     , "flatten"
     , "tl"
     , "tail"
+    , "bu"
     , "."
     , "α"
     , "+"
@@ -221,6 +223,7 @@ data Token
   | AppendLeft
   | AppendRight
   | While
+  | Bu
   | Flatten
   | Tail
   | OpenBracket

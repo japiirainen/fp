@@ -201,6 +201,7 @@ apply while@(Combinator2 While predicate f) o =
         Atom (Bool True) -> apply while (apply f o)
         Atom (Bool False) -> o
         _ -> Bottom
+apply (Combinator2 Bu f x) o = apply f (List [x, o])
 -- construction
 apply (Construction fns) arg = List (map (`apply` arg) fns)
 -- condition

@@ -109,11 +109,13 @@ instance Pretty Combinator1 where
 data Combinator2
   = Composition
   | While
+  | Bu
   deriving stock (Eq, Show)
 
 instance Pretty Combinator2 where
   pretty Composition = Pretty.operator "∘"
   pretty While = Pretty.operator "while"
+  pretty Bu = Pretty.operator "bu"
 
 data Primitive
   = Transpose
@@ -353,4 +355,7 @@ prettyComposition :: Pretty a => Syntax s a -> Doc AnsiStyle
 prettyComposition = prettyCombinator2 Composition prettyWhile
 
 prettyWhile :: Pretty a => Syntax s a -> Doc AnsiStyle
-prettyWhile = prettyCombinator2 While prettyExpression
+prettyWhile = prettyCombinator2 While prettyBu
+
+prettyBu :: Pretty a => Syntax s a -> Doc AnsiStyle
+prettyBu = prettyCombinator2 Bu prettyExpression

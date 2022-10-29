@@ -125,6 +125,7 @@ render = \case
   Lexer.Distr -> "distr"
   Lexer.Length -> "length"
   Lexer.While -> "while"
+  Lexer.Bu -> "bu"
   Lexer.Flatten -> "flatten"
   Lexer.Id -> "id"
   Lexer.NthBack n -> Text.pack (show n) <> "~"
@@ -337,6 +338,16 @@ grammar = mdo
             pure
               Syntax.Combinator2
                 { c2 = Syntax.While
+                , operatorLocation = Syntax.location argument1
+                , ..
+                }
+          <|> do
+            location <- locatedToken Lexer.Bu
+            argument1 <- expression
+            argument2 <- expression
+            pure
+              Syntax.Combinator2
+                { c2 = Syntax.Bu
                 , operatorLocation = Syntax.location argument1
                 , ..
                 }

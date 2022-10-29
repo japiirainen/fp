@@ -100,6 +100,11 @@ ordinary languages.
 `while` provides a way to run a specific program many times, specifically
 untile some condition is met.
 
+- [Binary to unary](./examples/bu.fp)
+`bu` gives a convenient way to turn binary (2 argument) functions
+into unary (1 argument) functions. This is kind of like partial
+application.
+
 - [Matrix multiplication](./examples/mm.fp)
 This examples shows how to do matrix multiplication in `fp`.
 
@@ -166,4 +171,7 @@ nix-shell
 `fp` is a programming language heavily inspired by the language John Backus
 described in his 1977 Turing Award lecture.
 
-Currently there is enough of an implementation to interpret the first example given by Backus in his paper. This program is calculating the 'inner product'.
+Currently almost all features described in the paper are implemented. This not implemented:
+
+- recursion (I'm not sure if I want to allow user defined recursion).
+
