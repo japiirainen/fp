@@ -22,10 +22,15 @@ The paper can be found [here](https://dl.acm.org/doi/10.1145/359576.359579).
 ## Examples of `fp`
 
 ```haskell
-Def innerProduct ≡ (insert +)∘(applyToAll *)∘transpose
+{- Matrix multiplication.
+-}
 
--- or abbreviated
 Def ip ≡ /+∘α*∘⍉
+
+Def mm ≡ α(α ip) ∘ α distl ∘ distr ∘ [~0, ⍉∘~1]
+
+mm:< < <1,2>, <4,5> >,
+     < <6,8>, <7,9>> >
 ```
 
 ## Usage
