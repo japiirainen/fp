@@ -64,6 +64,15 @@ tests:
     dependencies:
       - base
       - fp
+      - directory
+      - filepath
+      - mtl
+      - prettyprinter
+      - safe-exceptions
+      - tasty
+      - tasty-hunit
+      - tasty-silver
+      - text
   doctest:
     main: Main.hs
     source-dirs: doctest
