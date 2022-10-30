@@ -139,6 +139,8 @@ data Primitive
   | AppendRight
   | Flatten
   | Tail
+  | RotateLeft
+  | RotateRight
   | Nth Int
   | NthBack Int
   deriving stock (Eq, Show)
@@ -166,6 +168,8 @@ instance Pretty Primitive where
     IntoSeq -> Pretty.builtin "@<>"
     AppendLeft -> Pretty.builtin "apndl"
     AppendRight -> Pretty.builtin "apndr"
+    RotateLeft -> Pretty.builtin "rotl"
+    RotateRight -> Pretty.builtin "rotr"
     Flatten -> Pretty.builtin "flatten"
     Tail -> Pretty.builtin "tail"
 

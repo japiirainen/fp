@@ -127,6 +127,7 @@ Here's a bunch of primitive functions.
 - [null](./examples/null.fp)
 - [reverse](./examples/reverse.fp)
 - [transpose](./examples/transpose.fp)
+- [rotate](./examples/rotate.fp)
 
 - [Unbound variable error](./examples/fact.fp)
 `Fp` also has nice error messages.

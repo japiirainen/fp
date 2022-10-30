@@ -79,6 +79,8 @@ parseToken =
         , AppendRight <$ symbol "apndr"
         , Flatten <$ symbol "flatten"
         , Tail <$ (symbol "tail" <|> symbol "tl")
+        , RotateLeft <$ symbol "rotl"
+        , RotateRight <$ symbol "rotr"
         ]
         <?> "primitive function"
     , Combinators.choice
@@ -153,6 +155,8 @@ reserved =
     , "tl"
     , "tail"
     , "bu"
+    , "rotl"
+    , "rotr"
     , "."
     , "α"
     , "+"
@@ -222,6 +226,8 @@ data Token
   | Or
   | AppendLeft
   | AppendRight
+  | RotateLeft
+  | RotateRight
   | While
   | Bu
   | Flatten

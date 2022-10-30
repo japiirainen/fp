@@ -155,6 +155,8 @@ render = \case
   Lexer.AtSign -> "@"
   Lexer.AppendLeft -> "apndl"
   Lexer.AppendRight -> "apndr"
+  Lexer.RotateLeft -> "rotl"
+  Lexer.RotateRight -> "rotr"
 
 grammar :: Grammar r (Parser r [Syntax Offset Input])
 grammar = mdo
@@ -314,6 +316,12 @@ grammar = mdo
           <|> do
             location <- locatedToken Lexer.Tail
             pure Syntax.Primitive {primitive = Syntax.Tail, ..}
+          <|> do
+            location <- locatedToken Lexer.RotateLeft
+            pure Syntax.Primitive {primitive = Syntax.RotateLeft, ..}
+          <|> do
+            location <- locatedToken Lexer.RotateRight
+            pure Syntax.Primitive {primitive = Syntax.RotateRight, ..}
           <|> do
             location <- locatedToken Lexer.AtSign
             token Lexer.OpenAngle

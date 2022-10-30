@@ -184,6 +184,14 @@ apply (Primitive Flatten) _ = Bottom
 apply (Primitive Tail) (List vs) =
   if length vs > 1 then List (tail vs) else Bottom
 apply (Primitive Tail) _ = Bottom
+apply (Primitive RotateLeft) (List vs) = List (rotateLeft vs)
+  where
+    rotateLeft = \case [] -> []; x : xs -> xs <> [x]
+apply (Primitive RotateLeft) _ = Bottom
+apply (Primitive RotateRight) (List vs) = List (rotateRight vs)
+  where
+    rotateRight = \case [] -> []; xs -> last xs : init xs
+apply (Primitive RotateRight) _ = Bottom
 -- combinators
 apply (Combinator1 Insert f) (Value.List vs) =
   foldl1 (\acc x -> apply f (List [acc, x])) vs
