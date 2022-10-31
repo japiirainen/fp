@@ -132,6 +132,7 @@ apply (Primitive Transpose) (List vs) =
   let unwrap (List ys) = ys; unwrap _ = []
    in List (List <$> transpose (unwrap <$> vs))
 apply (Primitive Reverse) (List vs) = List (reverse vs)
+apply (Primitive Reverse) _ = Bottom
 apply (Primitive Distl) (List vs) = case vs of
   [a, List xs] -> List $ map (\x -> List [a, x]) xs
   _ -> Bottom
