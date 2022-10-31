@@ -11,6 +11,7 @@
 - [Development](#development)
   - [Nix support](#nix-support)
   - [Tips](#tips)
+- [Credits](#credits)
 
 ## fp programming language
 
@@ -181,3 +182,6 @@ Currently almost all features described in the paper are implemented. This not i
 
 - recursion (I'm not sure if I want to allow user defined recursion).
 
+## Credits
+
+- Gabriella Gonzalez's (Gabriella439) [grace](https://github.com/Gabriella439/grace) was an invaluable resource for interpreter design in haskell.
