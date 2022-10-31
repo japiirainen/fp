@@ -66,7 +66,7 @@ fileToTestTree prefix = do
         )
     Right values -> do
       let generateOutputFile =
-            pure @IO . Text.unlines . map (pretty_ . Normalize.quote [])
+            pure @IO . Text.unlines . map (pretty_ . Normalize.quote []) . filter Value.shouldShow
 
       return
         ( Tasty.testGroup
