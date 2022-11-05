@@ -104,7 +104,7 @@ ordinary languages.
 
 - [While](./examples/while.fp)
 `while` provides a way to run a specific program many times, specifically
-untile some condition is met.
+until some condition is met.
 
 - [Binary to unary](./examples/bu.fp)
 `bu` gives a convenient way to turn binary (2 argument) functions
@@ -112,10 +112,10 @@ into unary (1 argument) functions. This is kind of like partial
 application.
 
 - [Matrix multiplication](./examples/mm.fp)
-This examples shows how to do matrix multiplication in `fp`.
+This example shows how to do matrix multiplication in `fp`.
 
-- [Facrorials](./examples/fact.fp)
-A way to compute factorial's in `fp`.
+- [Factorials](./examples/fact.fp)
+A way to compute factorials in `fp`.
 
 Here's a bunch of primitive functions.
 
@@ -178,7 +178,7 @@ nix-shell
 `fp` is a programming language heavily inspired by the language John Backus
 described in his 1977 Turing Award lecture.
 
-Currently almost all features described in the paper are implemented. This not implemented:
+Currently, almost all features described in the paper are implemented. This is not implemented:
 
 - recursion (I'm not sure if I want to allow user defined recursion).
 
