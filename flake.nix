@@ -20,11 +20,11 @@
       perSystem = { self', config, pkgs, ... }: {
         haskellProjects.default = {
           root = ./.;
+          name = "fp";
           buildTools = hp: {
             inherit (pkgs)
               treefmt;
           } // config.treefmt.formatters;
-          enableHLSCheck = true;
         };
         treefmt.formatters = {
           inherit (pkgs)
