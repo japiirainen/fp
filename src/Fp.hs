@@ -133,13 +133,9 @@ main = do
       (values, _) <- throws eitherResult
 
       Monad.forM_ values \value -> do
-        if Value.shouldShow value
-          then do
-            render <- getRender highlight
-
-            let syntax = Normalize.quote [] value
-
-            render (Fp.Pretty.pretty syntax <> Pretty.hardline)
-          else pure ()
+        Monad.when (Value.shouldShow value)
+          $ do render <- getRender highlight
+               let syntax = Normalize.quote [] value
+               render (Fp.Pretty.pretty syntax <> Pretty.hardline)
     REPL {} -> do
       REPL.repl
