@@ -13,6 +13,7 @@ module Fp.REPL (
 import Control.Exception.Safe (displayException, throwIO)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.State (MonadState (..))
+import Data.Bifunctor (Bifunctor (bimap))
 import Fp.Interpret (Input (..))
 import System.Console.Haskeline (Interrupt (..))
 import System.Console.Repline (CompleterStyle (..), MultiLine (..), ReplOpts (..))
@@ -21,7 +22,6 @@ import Prelude hiding (lex)
 import qualified Control.Monad as Monad
 import qualified Control.Monad.Except as Except
 import qualified Control.Monad.State as State
-import Data.Bifunctor (Bifunctor (bimap))
 import qualified Data.Text as Text
 import qualified Data.Text.IO as Text.IO
 import qualified Fp.Interpret as Interpret
